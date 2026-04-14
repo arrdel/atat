@@ -1,8 +1,6 @@
 """
 Setup script for ATAT: Adaptive Token Attention for Text Diffusion.
 
-Implementation of "Not All Tokens Are Equal: Importance-Aware Masking
-for Discrete Diffusion Language Models" (NeurIPS 2026).
 """
 
 from setuptools import setup, find_packages
