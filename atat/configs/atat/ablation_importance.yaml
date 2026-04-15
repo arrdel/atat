@@ -1,13 +1,3 @@
-# =============================================================================
-# Table 2 Ablation: Importance Estimation Variants
-# Paper Table: tab:hybrid-discovery
-# =============================================================================
-# Run all 4 importance estimator variants:
-#   1. Full ATAT (λ=0.7 learned + 0.3 frequency) — default in base.yaml
-#   2. Learned only (λ=1.0)
-#   3. Frequency only (λ=0.0)
-#   4. Uniform (no importance)
-
 _base_: base.yaml
 
 # Variant-specific overrides (select one via CLI):

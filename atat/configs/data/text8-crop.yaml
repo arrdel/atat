@@ -2,6 +2,6 @@
 train: text8-crop
 valid: text8
 tokenizer_name_or_path: text8
-cache_dir: /share/kuleshov/ssahoo/textdiffusion/data
+cache_dir: /tmp/data
 wrap: True
 streaming: False

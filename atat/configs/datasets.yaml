@@ -1,11 +1,3 @@
-# Global Dataset Configuration
-# Controls dataset selection across all training, evaluation, and validation scripts
-# 
-# USAGE:
-#   from atat.utils import get_dataset_manager
-#   manager = get_dataset_manager(preset='debug')  # or 'validation', 'production'
-#   dataset_config = manager.get_config('openwebtext')
-
 # Stage Presets
 stages:
   debug:

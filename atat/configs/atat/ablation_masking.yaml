@@ -1,13 +1,3 @@
-# =============================================================================
-# Table 4 Ablation: Masking Strategy Variants
-# Paper Table: tab:masking-ablation
-# =============================================================================
-# Run all 4 masking strategies:
-#   1. Balanced (ours): g_bal(i,t) = t·g_inv(i) + (1-t)·g_prop(i)
-#   2. Proportional: g_prop(i) = η + (1-2η)·i
-#   3. Inverse: g_inv(i) = η + (1-2η)·(1-i)
-#   4. Uniform: standard random masking
-
 _base_: base.yaml
 
 variants:
