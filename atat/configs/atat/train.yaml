@@ -1,0 +1,35 @@
+# =============================================================================
+# ATAT Training Configuration
+# Full reproduction of paper results (Table 1)
+# Hardware: 4× RTX 4090
+# Expected duration: ~7 days
+# =============================================================================
+
+_base_: base.yaml
+
+training:
+  max_steps: 1_000_000
+  precision: fp16
+
+data:
+  batch_size: 64                # 16 per GPU × 4 GPUs
+  seq_length: 1024
+
+# Multi-GPU
+distributed:
+  strategy: ddp
+  num_gpus: 4
+  find_unused_parameters: false
+
+# Checkpointing
+checkpointing:
+  save_dir: ./outputs/checkpoints
+  save_every: 50000
+  keep_top_k: 5
+  monitor: val/ppl
+  mode: min
+
+logging:
+  project: atat-diffusion
+  name: atat-train-full
+  tags: [training, full, openwebtext]

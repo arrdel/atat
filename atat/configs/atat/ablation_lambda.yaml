@@ -1,0 +1,28 @@
+# =============================================================================
+# Table 5 Ablation: Lambda Sensitivity
+# Paper Table: tab:lambda-sensitivity
+# =============================================================================
+# Sweep λ ∈ {0.0, 0.3, 0.5, 0.7, 0.9, 1.0}
+# i^l = λ · i^l_learned + (1-λ) · i^l_freq
+
+_base_: base.yaml
+
+variants:
+  lambda_0.0:
+    model.importance.mode: frequency_only
+    model.importance.lambda_blend: 0.0
+  lambda_0.3:
+    model.importance.mode: full
+    model.importance.lambda_blend: 0.3
+  lambda_0.5:
+    model.importance.mode: full
+    model.importance.lambda_blend: 0.5
+  lambda_0.7:
+    model.importance.mode: full
+    model.importance.lambda_blend: 0.7
+  lambda_0.9:
+    model.importance.mode: full
+    model.importance.lambda_blend: 0.9
+  lambda_1.0:
+    model.importance.mode: learned_only
+    model.importance.lambda_blend: 1.0

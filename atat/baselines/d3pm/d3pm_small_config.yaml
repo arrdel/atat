@@ -1,0 +1,56 @@
+# D3PM Small Model Configuration
+# Baseline implementation for comparison with ATAT
+
+# Model architecture
+model:
+  vocab_size: 50257  # GPT-2 tokenizer
+  hidden_size: 768
+  num_layers: 12
+  num_heads: 12
+  max_length: 1024
+  dropout: 0.1
+
+# Diffusion process
+diffusion:
+  num_timesteps: 1000
+  schedule: cosine  # 'cosine' or 'linear'
+  objective: vlb    # Variational lower bound
+
+# Training configuration
+training:
+  max_steps: 500000
+  batch_size: 4
+  learning_rate: 3e-4
+  weight_decay: 0.01
+  warmup_steps: 10000
+  gradient_clip: 1.0
+  
+  # Checkpointing
+  checkpoint_dir: ./outputs/baselines/d3pm_small
+  save_every_n_steps: 10000
+  
+  # Validation
+  val_check_interval: 5000
+  log_every_n_steps: 100
+
+# Data configuration
+data:
+  dataset: openwebtext
+  cache_dir: ./data_cache
+  num_workers: 4
+  
+  # Preprocessing
+  max_length: 1024
+  stride: 512
+
+# Logging
+logging:
+  wandb_project: atat-diffusion-baselines
+  wandb_run_name: d3pm_small_baseline
+  log_model: false
+
+# System
+system:
+  seed: 42
+  deterministic: false
+  benchmark: true

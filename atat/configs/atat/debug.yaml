@@ -1,0 +1,28 @@
+# =============================================================================
+# Quick debug configuration for development
+# Uses small batch, few steps, CPU-friendly
+# =============================================================================
+
+_base_: base.yaml
+
+training:
+  max_steps: 100
+  precision: fp32
+  warmup_steps: 10
+  seed: 42
+
+data:
+  batch_size: 4
+  seq_length: 128
+  num_workers: 0
+
+evaluation:
+  nfe: 10
+  benchmarks:
+    - wikitext2
+  num_runs: 1
+
+logging:
+  log_every: 10
+  eval_every: 50
+  checkpoint_every: 100

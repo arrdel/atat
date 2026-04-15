@@ -21,76 +21,64 @@ wheels/
 *.egg
 
 # Virtual environments
+.env
+.venv
 env/
 venv/
-ENV/
-env.bak/
-venv.bak/
 
 # IDE
-.vscode/
+.vscode/settings.json
 .idea/
 *.swp
 *.swo
-*~
+
+# OS
 .DS_Store
+Thumbs.db
 
 # Jupyter
-.ipynb_checkpoints
-*.ipynb
+.ipynb_checkpoints/
 
-# PyTorch
-*.pth
-*.pt
-*.ckpt
-checkpoints/
-
-# Training outputs
+# Data & outputs (large files)
+data_cache/
 outputs/
-logs/
+checkpoints/
 wandb/
-watch_folder/
+lightning_logs/
+*.ckpt
+*.pt
+*.bin
 
-# Data (large files in scratch)
-data/
-datasets/
-*.tar
-*.gz
-*.zip
+# LaTeX build artifacts
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.bbl
+paper/*.blg
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.synctex.gz
 
-# Temporary
-.cache/
-tmp/
-temp/
-.archive/
+# Trash
 .trash/
 
-# Model checkpoints (too large for git)
-*.safetensors
-model_*.bin
-docs/archived_report
-docs/archived_latex
-docs/figures
+# Figures (architecture diagrams - local only)
+figures/
 
-# Baseline repository files (from kuleshov-group/mdlm)
-# These are reference materials and should not be tracked
-CITATION.cff
-LICENSE
-*.pdf
-mdlm/CITATION.cff
-mdlm/LICENSE
-mdlm/*.pdf
+# Results (evaluation outputs - local only)
+results/
 
-# Original baseline files (if present)
-baseline/
-original_mdlm/
+# Old docs (GitHub Pages)
+docs/
 
-# Ignore all notes
---- IGNORE ---
-*.md
-*.txt
-*.rst
-!README.md  
+# Results (keep JSONs, ignore large files)
+results/**/*.png
+results/**/*.gif
+results/**/*.pdf
 
-report/
-sample/
+# Frequency table
+freq_table.pt
+
+# Old directories (cleaned up)
+paperbanana/
+docs/index.html

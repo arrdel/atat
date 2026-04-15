@@ -1,0 +1,121 @@
+# =============================================================================
+# ATAT Base Configuration
+# Paper: "Not All Tokens Are Equal: Importance-Aware Masking for
+#         Discrete Diffusion Language Models"
+# =============================================================================
+# All hyperparameters match Appendix A.2 (Table 7) and A.3 (Table 8).
+
+# ----- Architecture (Table 8) -----
+model:
+  # Frozen GPT-2 Small anchor (124M params)
+  anchor_model: gpt2
+  freeze_anchor: true
+
+  # Importance Estimator (886K params)
+  # LN → 768 → 256 → GELU → 256 → 1 → sigmoid
+  importance:
+    mode: full                  # full | learned_only | frequency_only | uniform
+    hidden_dim: 256
+    lambda_blend: 0.7           # λ: weight for learned component
+    frequency_weight: 0.3       # 1 - λ: weight for frequency prior
+    oracle_tau: 10              # τ for oracle targets (Eq. 4)
+
+  # Denoiser (48M params, 6-layer Transformer)
+  denoiser:
+    n_layers: 6
+    hidden_size: 768
+    n_heads: 12
+    dropout: 0.1
+    activation: gelu
+    norm: pre_ln                # Pre-LayerNorm
+    positional_encoding: rope   # Rotary Position Embedding
+    init_from_anchor: true      # Init from GPT-2 layers 0-5
+
+  # Importance projection
+  importance_projection_dim: 2  # W_i ∈ R^{768×2}, input [i^l; 1-i^l]
+
+  # Token embedding
+  vocab_size: 50257             # GPT-2 tokenizer
+  seq_length: 1024
+
+# ----- Adaptive Masking (Section 3.3) -----
+masking:
+  strategy: balanced            # balanced | proportional | inverse | uniform
+  eta: 0.3                      # η clipping parameter (Eq. 3)
+
+# ----- Curriculum (Section 3.4) -----
+curriculum:
+  enabled: true
+  stages:
+    easy:
+      fraction: 0.20            # First 20% of training
+      importance_range: [0.0, 0.3]
+    medium:
+      fraction: 0.40            # Next 40% of training
+      importance_range: [0.3, 0.7]
+    hard:
+      fraction: 0.40            # Final 40% of training
+      importance_range: [0.0, 1.0]
+  transition: cosine            # Smooth cosine interpolation
+  plateau_detection:
+    enabled: true
+    threshold: 0.01             # 1% improvement threshold
+    window: 10000               # Steps to monitor
+
+# ----- Loss (Eq. 5) -----
+loss:
+  importance_weight_beta: 1.0   # β in w(i) = 1 + β·i
+  gamma: 0.003                  # γ: importance loss coefficient
+  # L_ATAT = L_denoise + γ · L_importance
+
+# ----- Training (Table 7) -----
+training:
+  optimizer: adamw
+  lr: 3.0e-4
+  weight_decay: 0.01
+  betas: [0.9, 0.999]
+  eps: 1.0e-8
+  grad_clip: 1.0
+  warmup_steps: 1000
+  lr_schedule: cosine_decay
+  max_steps: 1_000_000
+  precision: fp16               # Mixed precision
+  ema_decay: 0.9999
+  seed: 42
+
+# ----- Data -----
+data:
+  train: openwebtext
+  tokenizer: gpt2
+  seq_length: 1024
+  batch_size: 64                # Global batch size
+  num_workers: 8
+  pin_memory: true
+
+# ----- Evaluation (Appendix A.4) -----
+evaluation:
+  method: nelbo                 # NELBO-based PPL (Section 4.1)
+  nfe: 1000                     # Number of function evaluations
+  benchmarks:
+    - wikitext2
+    - lambada
+    - ptb
+    - lm1b
+    - ag_news
+    - pubmed
+    - arxiv
+  num_runs: 3
+  seed: 42
+
+# ----- Uncertainty Sampling (Section 3.5) -----
+sampling:
+  method: uncertainty_guided
+  kappa_schedule: true          # κ = 1/(t/T + 0.1)
+  priority: entropy_importance  # s^l = entropy × importance
+
+# ----- Logging -----
+logging:
+  project: atat-diffusion
+  log_every: 100
+  eval_every: 10000
+  checkpoint_every: 50000

@@ -1,0 +1,15 @@
+# =============================================================================
+# Appendix: NFE Trade-off Evaluation
+# Paper Table: tab:nfe-full
+# =============================================================================
+# Evaluate ATAT and baselines at different NFE budgets:
+#   NFE ∈ {50, 100, 250, 500, 1000, 2000}
+
+_base_: base.yaml
+
+evaluation:
+  nfe_sweep: [50, 100, 250, 500, 1000, 2000]
+  benchmarks:
+    - wikitext2
+    - lambada
+    - ptb

@@ -1,0 +1,845 @@
+% Bibliography for ATAT: Adaptive Token Attention for Text Diffusion
+% ARR 2026 Submission
+
+%==============================================================================
+% FOUNDATIONAL LANGUAGE MODELS
+%==============================================================================
+
+@article{gpt2,
+  title={Language Models are Unsupervised Multitask Learners},
+  author={Radford, Alec and Wu, Jeffrey and Child, Rewon and Luan, David and Amodei, Dario and Sutskever, Ilya},
+  journal={OpenAI Blog},
+  year={2019}
+}
+
+@article{gpt3,
+  title={Language Models are Few-Shot Learners},
+  author={Brown, Tom and Mann, Benjamin and Ryder, Nick and Subbiah, Melanie and Kaplan, Jared and Dhariwal, Prafulla and Neelakantan, Arvind and Shyam, Pranav and Sastry, Girish and Askell, Amanda and others},
+  journal={Advances in Neural Information Processing Systems},
+  volume={33},
+  pages={1877--1901},
+  year={2020}
+}
+
+@article{llama,
+  title={{LLaMA}: Open and Efficient Foundation Language Models},
+  author={Touvron, Hugo and Lavril, Thibaut and Izacard, Gautier and Martinet, Xavier and Lachaux, Marie-Anne and Lacroix, Timoth{\'e}e and Rozi{\`e}re, Baptiste and Goyal, Naman and Hambro, Eric and Azhar, Faisal and others},
+  journal={arXiv preprint arXiv:2302.13971},
+  year={2023}
+}
+
+@article{llama2,
+  title={{Llama 2}: Open Foundation and Fine-Tuned Chat Models},
+  author={Touvron, Hugo and Martin, Louis and Stone, Kevin and Albert, Peter and Almahairi, Amjad and Babaei, Yasmine and Bashlykov, Nikolay and Batra, Soumya and Bhargava, Prajjwal and Bhosale, Shruti and others},
+  journal={arXiv preprint arXiv:2307.09288},
+  year={2023}
+}
+
+@inproceedings{vaswani2017attention,
+  title={Attention is All You Need},
+  author={Vaswani, Ashish and Shazeer, Noam and Parmar, Niki and Uszkoreit, Jakob and Jones, Llion and Gomez, Aidan N and Kaiser, {\L}ukasz and Polosukhin, Illia},
+  booktitle={Advances in Neural Information Processing Systems},
+  volume={30},
+  year={2017}
+}
+
+@article{bert,
+  title={{BERT}: Pre-training of Deep Bidirectional Transformers for Language Understanding},
+  author={Devlin, Jacob and Chang, Ming-Wei and Lee, Kenton and Toutanova, Kristina},
+  journal={Proceedings of NAACL-HLT},
+  pages={4171--4186},
+  year={2019}
+}
+
+@article{roberta,
+  title={{RoBERTa}: A Robustly Optimized {BERT} Pretraining Approach},
+  author={Liu, Yinhan and Ott, Myle and Goyal, Naman and Du, Jingfei and Joshi, Mandar and Chen, Danqi and Levy, Omer and Lewis, Mike and Zettlemoyer, Luke and Stoyanov, Veselin},
+  journal={arXiv preprint arXiv:1907.11692},
+  year={2019}
+}
+
+@article{t5,
+  title={Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer},
+  author={Raffel, Colin and Shazeer, Noam and Roberts, Adam and Lee, Katherine and Narang, Sharan and Matena, Michael and Zhou, Yanqi and Li, Wei and Liu, Peter J},
+  journal={Journal of Machine Learning Research},
+  volume={21},
+  number={140},
+  pages={1--67},
+  year={2020}
+}
+
+%==============================================================================
+% DIFFUSION MODELS - CONTINUOUS
+%==============================================================================
+
+@inproceedings{ddpm,
+  title={Denoising Diffusion Probabilistic Models},
+  author={Ho, Jonathan and Jain, Ajay and Abbeel, Pieter},
+  booktitle={Advances in Neural Information Processing Systems},
+  volume={33},
+  pages={6840--6851},
+  year={2020}
+}
+
+@inproceedings{score_sde,
+  title={Score-Based Generative Modeling through Stochastic Differential Equations},
+  author={Song, Yang and Sohl-Dickstein, Jascha and Kingma, Diederik P and Kumar, Abhishek and Ermon, Stefano and Poole, Ben},
+  booktitle={International Conference on Learning Representations},
+  year={2021}
+}
+
+@inproceedings{dit,
+  title={Scalable Diffusion Models with Transformers},
+  author={Peebles, William and Xie, Saining},
+  booktitle={International Conference on Computer Vision},
+  pages={4195--4205},
+  year={2023}
+}
+
+@inproceedings{nichol2021improved,
+  title={Improved Denoising Diffusion Probabilistic Models},
+  author={Nichol, Alexander Quinn and Dhariwal, Prafulla},
+  booktitle={International Conference on Machine Learning},
+  pages={8162--8171},
+  year={2021}
+}
+
+@article{dhariwal2021diffusion,
+  title={Diffusion Models Beat {GANs} on Image Synthesis},
+  author={Dhariwal, Prafulla and Nichol, Alexander},
+  journal={Advances in Neural Information Processing Systems},
+  volume={34},
+  pages={8780--8794},
+  year={2021}
+}
+
+@inproceedings{song2020denoising,
+  title={Denoising Diffusion Implicit Models},
+  author={Song, Jiaming and Meng, Chenlin and Ermon, Stefano},
+  booktitle={International Conference on Learning Representations},
+  year={2021}
+}
+
+%==============================================================================
+% DISCRETE DIFFUSION LANGUAGE MODELS
+%==============================================================================
+
+@inproceedings{d3pm,
+  title={Structured Denoising Diffusion Models in Discrete State-Spaces},
+  author={Austin, Jacob and Johnson, Daniel D and Ho, Jonathan and Tarlow, Daniel and van den Berg, Rianne},
+  booktitle={Advances in Neural Information Processing Systems},
+  volume={34},
+  pages={17981--17993},
+  year={2021}
+}
+
+@inproceedings{mdlm,
+  title={Simple and Effective Masked Diffusion Language Models},
+  author={Sahoo, Subham Sekhar and Arriola, Marianne and Gokaslan, Aaron and Marroquin, Edgar Mariano and Rush, Alexander M and Schiff, Yair and Chiu, Justin T and Kuleshov, Volodymyr},
+  booktitle={Advances in Neural Information Processing Systems},
+  year={2024}
+}
+
+@inproceedings{sedd,
+  title={Discrete Diffusion Modeling by Estimating the Ratios of the Data Distribution},
+  author={Lou, Aaron and Meng, Chenlin and Ermon, Stefano},
+  booktitle={International Conference on Machine Learning},
+  pages={22852--22877},
+  year={2024}
+}
+
+@article{adlm,
+  title={Anchored Diffusion Language Model},
+  author={Rout, Litu and Caramanis, Constantine and Shakkottai, Sanjay},
+  journal={arXiv preprint arXiv:2505.18456},
+  year={2025}
+}
+
+@article{remdm,
+  title={Remasking Discrete Diffusion Models with Inference-Time Scaling},
+  author={Wang, Guanghan and Schiff, Yair and Sahoo, Subham Sekhar and Kuleshov, Volodymyr},
+  journal={arXiv preprint arXiv:2503.00307},
+  year={2025}
+}
+
+@inproceedings{bd3lm,
+  title={Block Diffusion: Interpolating Between Autoregressive and Diffusion Language Models},
+  author={Arriola, Marianne and Sahoo, Subham Sekhar and Gokaslan, Aaron and Yang, Zhihan and Qi, Zhixuan and Han, Jiaqi and Chiu, Justin T and Kuleshov, Volodymyr},
+  booktitle={International Conference on Learning Representations},
+  year={2025}
+}
+
+@article{md4,
+  title={{MD4}: Simplified and Generalized Masked Diffusion for Discrete Data},
+  author={Shi, Jiaxin and Han, Kehang and Wang, Zhe and Doucet, Arnaud and Titsias, Michalis K},
+  journal={arXiv preprint arXiv:2406.01329},
+  year={2024}
+}
+
+@inproceedings{DiffusionBERT,
+  title={{DiffusionBERT}: Improving Generative Masked Language Models with Diffusion Models},
+  author={He, Zhengfu and Sun, Tianxiang and Wang, Kuan and Huang, Xuanjing and Qiu, Xipeng},
+  booktitle={Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics},
+  pages={4521--4534},
+  year={2023}
+}
+
+@article{li2022diffusion,
+  title={Diffusion-{LM} Improves Controllable Text Generation},
+  author={Li, Xiang Lisa and Thickstun, John and Gulrajani, Ishaan and Liang, Percy and Hashimoto, Tatsunori B},
+  journal={Advances in Neural Information Processing Systems},
+  volume={35},
+  pages={4328--4343},
+  year={2022}
+}
+
+@inproceedings{gong2023diffuseq,
+  title={{DiffuSeq}: Sequence to Sequence Text Generation with Diffusion Models},
+  author={Gong, Shansan and Li, Mukai and Feng, Jiangtao and Wu, Zhiyong and Kong, Lingpeng},
+  booktitle={International Conference on Learning Representations},
+  year={2023}
+}
+
+@article{wang2019bert,
+  title={{BERT} has a Mouth, and It Must Speak: {BERT} as a {M}arkov Random Field Language Model},
+  author={Wang, Alex and Cho, Kyunghyun},
+  journal={arXiv preprint arXiv:1902.04094},
+  year={2019}
+}
+
+@article{llada,
+  title={Large Language Diffusion Models},
+  author={Nie, Shen and Zhu, Fengqi and You, Zebin and Zhang, Xiaolu and Ou, Jingyang and Hu, Jun and Zhou, Jun and Lin, Yankai and Wen, Ji-Rong and Li, Chongxuan},
+  journal={arXiv preprint arXiv:2502.09992},
+  year={2025}
+}
+
+@inproceedings{smdm,
+  title={Scaling up Masked Diffusion Models on Text},
+  author={Nie, Shen and Zhu, Fengqi and Du, Chao and Pang, Tianyu and Liu, Qian and Zeng, Guangtao and Lin, Min and Li, Chongxuan},
+  booktitle={International Conference on Learning Representations},
+  year={2025}
+}
+
+@article{ou2025your,
+  title={Your Absorbing Discrete Diffusion Secretly Models the Conditional Distributions of Clean Data},
+  author={Ou, Jingyang and Nie, Shen and Xue, Kaiwen and Zhu, Fengqi and Sun, Jiacheng and Li, Zhenguo and Li, Chongxuan},
+  journal={arXiv preprint arXiv:2406.03736},
+  year={2024}
+}
+
+%==============================================================================
+% FLOW MATCHING AND CONTINUOUS-TIME FRAMEWORKS
+%==============================================================================
+
+@inproceedings{gat2024discrete,
+  title={Discrete Flow Matching},
+  author={Gat, Itai and Remez, Tal and Shaul, Neta and Kreuk, Felix and Skerry-Ryan, RJ and Synnaeve, Gabriel and Adi, Yossi and Lipman, Yaron},
+  booktitle={International Conference on Machine Learning},
+  year={2024}
+}
+
+@inproceedings{campbell2022continuous,
+  title={A Continuous Time Framework for Discrete Denoising Models},
+  author={Campbell, Andrew and Benton, Joe and De Bortoli, Valentin and Rainforth, Tom and Deligiannidis, George and Doucet, Arnaud},
+  booktitle={Advances in Neural Information Processing Systems},
+  volume={35},
+  pages={28266--28279},
+  year={2022}
+}
+
+@article{lipman2022flow,
+  title={Flow Matching for Generative Modeling},
+  author={Lipman, Yaron and Chen, Ricky T Q and Ben-Hamu, Heli and Nickel, Maximilian and Le, Matt},
+  journal={International Conference on Learning Representations},
+  year={2023}
+}
+
+%==============================================================================
+% DATASETS AND EVALUATION
+%==============================================================================
+
+@misc{owt,
+  title={OpenWebText Corpus},
+  author={Gokaslan, Aaron and Cohen, Vanya},
+  howpublished={\url{http://Skylion007.github.io/OpenWebTextCorpus}},
+  year={2019}
+}
+
+@article{lm1b,
+  title={One Billion Word Benchmark for Measuring Progress in Statistical Language Modeling},
+  author={Chelba, Ciprian and Mikolov, Tomas and Schuster, Mike and Ge, Qi and Brants, Thorsten and Koehn, Phillipp and Robinson, Tony},
+  journal={arXiv preprint arXiv:1312.3005},
+  year={2013}
+}
+
+@inproceedings{wikitext,
+  title={Pointer Sentinel Mixture Models},
+  author={Merity, Stephen and Xiong, Caiming and Bradbury, James and Socher, Richard},
+  booktitle={International Conference on Learning Representations},
+  year={2017}
+}
+
+@inproceedings{lambada,
+  title={The {LAMBADA} Dataset: Word Prediction Requiring a Broad Discourse Context},
+  author={Paperno, Denis and Kruszewski, Germ{\'a}n and Lazaridou, Angeliki and Pham, Quan Ngoc and Bernardi, Raffaella and Pezzelle, Sandro and Baroni, Marco and Boleda, Gemma and Fern{\'a}ndez, Raquel},
+  booktitle={Proceedings of the 54th Annual Meeting of the Association for Computational Linguistics},
+  pages={1525--1534},
+  year={2016}
+}
+
+@article{ptb,
+  title={Building a Large Annotated Corpus of {E}nglish: The {P}enn {T}reebank},
+  author={Marcus, Mitchell P and Santorini, Beatrice and Marcinkiewicz, Mary Ann},
+  journal={Computational Linguistics},
+  volume={19},
+  number={2},
+  pages={313--330},
+  year={1993}
+}
+
+@inproceedings{mauve,
+  title={{MAUVE}: Measuring the Gap Between Neural Text and Human Text using Divergence Frontiers},
+  author={Pillutla, Krishna and Swayamdipta, Swabha and Zellers, Rowan and Thickstun, John and Welleck, Sean and Choi, Yejin and Harchaoui, Zaid},
+  booktitle={Advances in Neural Information Processing Systems},
+  volume={34},
+  pages={4816--4828},
+  year={2021}
+}
+
+%==============================================================================
+% TRANSFORMERS, ATTENTION, AND ARCHITECTURES
+%==============================================================================
+
+@inproceedings{dai2019transformer,
+  title={Transformer-{XL}: Attentive Language Models beyond a Fixed-Length Context},
+  author={Dai, Zihang and Yang, Zhilin and Yang, Yiming and Carbonell, Jaime and Le, Quoc and Salakhutdinov, Ruslan},
+  booktitle={Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics},
+  pages={2978--2988},
+  year={2019}
+}
+
+@article{sparse_attention,
+  title={Generating Long Sequences with Sparse Transformers},
+  author={Child, Rewon and Gray, Scott and Radford, Alec and Sutskever, Ilya},
+  journal={arXiv preprint arXiv:1904.10509},
+  year={2019}
+}
+
+@article{roformer,
+  title={{RoFormer}: Enhanced Transformer with Rotary Position Embedding},
+  author={Su, Jianlin and Lu, Yu and Pan, Shengfeng and Murtadha, Ahmed and Wen, Bo and Liu, Yunfeng},
+  journal={Neurocomputing},
+  volume={568},
+  pages={127063},
+  year={2024}
+}
+
+@article{ba2016layer,
+  title={Layer Normalization},
+  author={Ba, Jimmy Lei and Kiros, Jamie Ryan and Hinton, Geoffrey E},
+  journal={arXiv preprint arXiv:1607.06450},
+  year={2016}
+}
+
+@article{hendrycks2016gaussian,
+  title={{Gaussian Error Linear Units (GELUs)}},
+  author={Hendrycks, Dan and Gimpel, Kevin},
+  journal={arXiv preprint arXiv:1606.08415},
+  year={2016}
+}
+
+%==============================================================================
+% CURRICULUM LEARNING
+%==============================================================================
+
+@inproceedings{curriculum_learning,
+  title={Curriculum Learning},
+  author={Bengio, Yoshua and Louradour, J{\'e}r{\^o}me and Collobert, Ronan and Weston, Jason},
+  booktitle={International Conference on Machine Learning},
+  pages={41--48},
+  year={2009}
+}
+
+@inproceedings{kumar2010self,
+  title={Self-Paced Learning for Latent Variable Models},
+  author={Kumar, M Pawan and Packer, Benjamin and Koller, Daphne},
+  booktitle={Advances in Neural Information Processing Systems},
+  volume={23},
+  year={2010}
+}
+
+@inproceedings{platanios2019competence,
+  title={Competence-based Curriculum Learning for Neural Machine Translation},
+  author={Platanios, Emmanouil Antonios and Stretcu, Otilia and Neubig, Graham and P{\'o}czos, Barnab{\'a}s and Mitchell, Tom M},
+  booktitle={Proceedings of NAACL-HLT},
+  pages={1162--1172},
+  year={2019}
+}
+
+@inproceedings{campos2021curriculum,
+  title={Curriculum Learning for Language Modeling},
+  author={Campos, Daniel},
+  booktitle={Findings of the Association for Computational Linguistics: EMNLP},
+  year={2021}
+}
+
+@inproceedings{sachan2016easy,
+  title={Easy Questions First? A Case Study on Curriculum Learning for Question Answering},
+  author={Sachan, Mrinmaya and Xing, Eric},
+  booktitle={Proceedings of the 54th Annual Meeting of the Association for Computational Linguistics},
+  pages={453--463},
+  year={2016}
+}
+
+@inproceedings{xu2020curriculum,
+  title={Curriculum Learning for Natural Language Understanding},
+  author={Xu, Benfeng and Zhang, Licheng and Mao, Zhendong and Wang, Quan and Xie, Hongtao and Zhang, Yongdong},
+  booktitle={Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics},
+  pages={6095--6104},
+  year={2020}
+}
+
+%==============================================================================
+% INFORMATION THEORY AND THEORETICAL FOUNDATIONS
+%==============================================================================
+
+@article{shannon1948mathematical,
+  title={A Mathematical Theory of Communication},
+  author={Shannon, Claude Elwood},
+  journal={The Bell System Technical Journal},
+  volume={27},
+  number={3},
+  pages={379--423},
+  year={1948}
+}
+
+@article{shannon1951prediction,
+  title={Prediction and Entropy of Printed {E}nglish},
+  author={Shannon, Claude Elwood},
+  journal={The Bell System Technical Journal},
+  volume={30},
+  number={1},
+  pages={50--64},
+  year={1951}
+}
+
+@book{zipf1949human,
+  title={Human Behavior and the Principle of Least Effort},
+  author={Zipf, George Kingsley},
+  publisher={Addison-Wesley Press},
+  year={1949}
+}
+
+@article{tishby2000information,
+  title={The Information Bottleneck Method},
+  author={Tishby, Naftali and Pereira, Fernando C and Bialek, William},
+  journal={arXiv preprint physics/0004057},
+  year={2000}
+}
+
+@inproceedings{sohl2015deep,
+  title={Deep Unsupervised Learning using Nonequilibrium Thermodynamics},
+  author={Sohl-Dickstein, Jascha and Weiss, Eric and Maheswaranathan, Niru and Ganguli, Surya},
+  booktitle={International Conference on Machine Learning},
+  pages={2256--2265},
+  year={2015}
+}
+
+@book{koller2009probabilistic,
+  title={Probabilistic Graphical Models: Principles and Techniques},
+  author={Koller, Daphna and Friedman, Nir},
+  year={2009},
+  publisher={MIT Press}
+}
+
+@book{cover2006elements,
+  title={Elements of Information Theory},
+  author={Cover, Thomas M and Thomas, Joy A},
+  edition={2nd},
+  year={2006},
+  publisher={Wiley-Interscience}
+}
+
+@article{kingma2013auto,
+  title={Auto-Encoding Variational {B}ayes},
+  author={Kingma, Diederik P and Welling, Max},
+  journal={International Conference on Learning Representations},
+  year={2014}
+}
+
+%==============================================================================
+% INTERPRETABILITY AND ANALYSIS
+%==============================================================================
+
+@inproceedings{tenney2019bert,
+  title={What Do You Learn from Context? Probing for Sentence Structure in Contextualized Word Representations},
+  author={Tenney, Ian and Xia, Patrick and Chen, Berlin and Wang, Alex and Poliak, Adam and McCoy, R Thomas and Kim, Najoung and Van Durme, Benjamin and Bowman, Samuel R and Das, Dipanjan and Elazar, Yanai},
+  booktitle={International Conference on Learning Representations},
+  year={2019}
+}
+
+@inproceedings{clark2019does,
+  title={What Does {BERT} Look At? An Analysis of {BERT}'s Attention},
+  author={Clark, Kevin and Khandelwal, Urvashi and Levy, Omer and Manning, Christopher D},
+  booktitle={Proceedings of the Workshop on Analyzing and Interpreting Neural Networks for NLP},
+  pages={276--286},
+  year={2019}
+}
+
+@inproceedings{vig2019multiscale,
+  title={A Multiscale Visualization of Attention in the Transformer Model},
+  author={Vig, Jesse},
+  booktitle={Proceedings of ACL System Demonstrations},
+  pages={37--42},
+  year={2019}
+}
+
+@inproceedings{li2016visualizing,
+  title={Visualizing and Understanding Neural Models in {NLP}},
+  author={Li, Jiwei and Chen, Xinlei and Hovy, Eduard and Jurafsky, Dan},
+  booktitle={Proceedings of NAACL-HLT},
+  pages={681--691},
+  year={2016}
+}
+
+@inproceedings{sundararajan2017axiomatic,
+  title={Axiomatic Attribution for Deep Networks},
+  author={Sundararajan, Mukund and Taly, Ankur and Yan, Qiqi},
+  booktitle={International Conference on Machine Learning},
+  pages={3319--3328},
+  year={2017}
+}
+
+@inproceedings{ethayarajh2020utility,
+  title={How Contextual are Contextualized Word Representations? Comparing the Geometry of {BERT}, {ELMo}, and {GPT}-2 Embeddings},
+  author={Ethayarajh, Kawin},
+  booktitle={Proceedings of EMNLP},
+  pages={55--65},
+  year={2019}
+}
+
+% Note: Key retains "2020" for backward compatibility, actual publication was 2019
+
+%==============================================================================
+% ADAPTIVE COMPUTATION AND MIXTURE OF EXPERTS
+%==============================================================================
+
+@article{graves2016adaptive,
+  title={Adaptive Computation Time for Recurrent Neural Networks},
+  author={Graves, Alex},
+  journal={arXiv preprint arXiv:1603.08983},
+  year={2016}
+}
+
+@inproceedings{dehghani2018universal,
+  title={Universal Transformers},
+  author={Dehghani, Mostafa and Gouws, Stephan and Vinyals, Oriol and Uszkoreit, Jakob and Kaiser, {\L}ukasz},
+  booktitle={International Conference on Learning Representations},
+  year={2019}
+}
+
+@inproceedings{shazeer2017outrageously,
+  title={Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer},
+  author={Shazeer, Noam and Mirhoseini, Azalia and Maziarz, Krzysztof and Davis, Andy and Le, Quoc and Hinton, Geoffrey and Dean, Jeff},
+  booktitle={International Conference on Learning Representations},
+  year={2017}
+}
+
+@article{fedus2022switch,
+  title={Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity},
+  author={Fedus, William and Zoph, Barret and Shazeer, Noam},
+  journal={Journal of Machine Learning Research},
+  volume={23},
+  number={120},
+  pages={1--39},
+  year={2022}
+}
+
+%==============================================================================
+% NON-AUTOREGRESSIVE GENERATION
+%==============================================================================
+
+@article{stern2019insertion,
+  title={Insertion Transformer: Flexible Sequence Generation via Insertion Operations},
+  author={Stern, Mitchell and Chan, William and Kiros, Jamie and Uszkoreit, Jakob},
+  journal={International Conference on Machine Learning},
+  pages={5976--5985},
+  year={2019}
+}
+
+@inproceedings{gu2019levenshtein,
+  title={Levenshtein Transformer},
+  author={Gu, Jiatao and Wang, Changhan and Zhao, Junbo},
+  booktitle={Advances in Neural Information Processing Systems},
+  volume={32},
+  year={2019}
+}
+
+@inproceedings{gu2018non,
+  title={Non-Autoregressive Neural Machine Translation},
+  author={Gu, Jiatao and Bradbury, James and Xiong, Caiming and Li, Victor O.K. and Socher, Richard},
+  booktitle={International Conference on Learning Representations},
+  year={2018}
+}
+
+@inproceedings{ghazvininejad2019mask,
+  title={Mask-Predict: Parallel Decoding of Conditional Masked Language Models},
+  author={Ghazvininejad, Marjan and Levy, Omer and Liu, Yinhan and Zettlemoyer, Luke},
+  booktitle={Proceedings of EMNLP-IJCNLP},
+  pages={6112--6121},
+  year={2019}
+}
+
+%==============================================================================
+% CONTROLLABLE GENERATION AND TEXT INFILLING
+%==============================================================================
+
+@article{keskar2019ctrl,
+  title={{CTRL}: A Conditional Transformer Language Model for Controllable Generation},
+  author={Keskar, Nitish Shirish and McCann, Bryan and Varshney, Lav R and Xiong, Caiming and Socher, Richard},
+  journal={arXiv preprint arXiv:1909.05858},
+  year={2019}
+}
+
+@inproceedings{donahue2020enabling,
+  title={Enabling Language Models to Fill in the Blanks},
+  author={Donahue, Chris and Lee, Mina and Liang, Percy},
+  booktitle={Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics},
+  pages={2492--2501},
+  year={2020}
+}
+
+@article{krause2021gedi,
+  title={{GeDi}: Generative Discriminator Guided Sequence Generation},
+  author={Krause, Ben and Gotmare, Akhilesh Deepak and McCann, Bryan and Keskar, Nitish Shirish and Joty, Shafiq and Socher, Richard and Rajani, Nazneen Fatema},
+  journal={Findings of EMNLP},
+  pages={4929--4952},
+  year={2021}
+}
+
+%==============================================================================
+% OPTIMIZATION
+%==============================================================================
+
+@article{adamw,
+  title={Decoupled Weight Decay Regularization},
+  author={Loshchilov, Ilya and Hutter, Frank},
+  journal={International Conference on Learning Representations},
+  year={2019}
+}
+
+@article{kingma2014adam,
+  title={Adam: A Method for Stochastic Optimization},
+  author={Kingma, Diederik P and Ba, Jimmy},
+  journal={International Conference on Learning Representations},
+  year={2015}
+}
+
+%==============================================================================
+% MASKED LANGUAGE MODELS AND PRETRAINING
+%==============================================================================
+
+@inproceedings{xlnet,
+  title={{XLNet}: Generalized Autoregressive Pretraining for Language Understanding},
+  author={Yang, Zhilin and Dai, Zihang and Yang, Yiming and Carbonell, Jaime and Salakhutdinov, Russ R and Le, Quoc V},
+  booktitle={Advances in Neural Information Processing Systems},
+  volume={32},
+  year={2019}
+}
+
+@inproceedings{electra,
+  title={{ELECTRA}: Pre-training Text Encoders as Discriminators Rather Than Generators},
+  author={Clark, Kevin and Luong, Minh-Thang and Le, Quoc V and Manning, Christopher D},
+  booktitle={International Conference on Learning Representations},
+  year={2020}
+}
+
+@article{wettig2023should,
+  title={Should You Mask 15\% in Masked Language Modeling?},
+  author={Wettig, Alexander and Gao, Tianyu and Zhong, Zexuan and Chen, Danqi},
+  journal={Proceedings of EACL},
+  pages={2985--3000},
+  year={2023}
+}
+
+%==============================================================================
+% SCALING LAWS
+%==============================================================================
+
+@article{kaplan2020scaling,
+  title={Scaling Laws for Neural Language Models},
+  author={Kaplan, Jared and McCandlish, Sam and Henighan, Tom and Brown, Tom B and Chess, Benjamin and Child, Rewon and Gray, Scott and Radford, Alec and Wu, Jeffrey and Amodei, Dario},
+  journal={arXiv preprint arXiv:2001.08361},
+  year={2020}
+}
+
+@article{hoffmann2022training,
+  title={Training Compute-Optimal Large Language Models},
+  author={Hoffmann, Jordan and Borgeaud, Sebastian and Mensch, Arthur and Buchatskaya, Elena and Cai, Trevor and Rutherford, Eliza and Casas, Diego de Las and Hendricks, Lisa Anne and Welbl, Johannes and Clark, Aidan and others},
+  journal={Advances in Neural Information Processing Systems},
+  volume={35},
+  pages={30016--30030},
+  year={2022}
+}
+
+%==============================================================================
+% KNOWLEDGE DISTILLATION AND TRANSFER
+%==============================================================================
+
+@inproceedings{hinton2015distilling,
+  title={Distilling the Knowledge in a Neural Network},
+  author={Hinton, Geoffrey and Vinyals, Oriol and Dean, Jeff},
+  booktitle={NIPS Deep Learning and Representation Learning Workshop},
+  year={2015}
+}
+
+@article{sanh2019distilbert,
+  title={{DistilBERT}, a Distilled Version of {BERT}: Smaller, Faster, Cheaper and Lighter},
+  author={Sanh, Victor and Debut, Lysandre and Chaumond, Julien and Wolf, Thomas},
+  journal={arXiv preprint arXiv:1910.01108},
+  year={2019}
+}
+
+%==============================================================================
+% SAMPLING AND DECODING
+%==============================================================================
+
+@article{holtzman2020curious,
+  title={The Curious Case of Neural Text Degeneration},
+  author={Holtzman, Ari and Buys, Jan and Du, Li and Forbes, Maxwell and Choi, Yejin},
+  journal={International Conference on Learning Representations},
+  year={2020}
+}
+
+@article{meister2023locally,
+  title={Locally Typical Sampling},
+  author={Meister, Clara and Pimentel, Tiago and Wiher, Gian and Cotterell, Ryan},
+  journal={Transactions of the Association for Computational Linguistics},
+  volume={11},
+  pages={102--121},
+  year={2023}
+}
+
+%==============================================================================
+% BENCHMARKS
+%==============================================================================
+
+@inproceedings{glue,
+  title={{GLUE}: A Multi-Task Benchmark and Analysis Platform for Natural Language Understanding},
+  author={Wang, Alex and Singh, Amanpreet and Michael, Julian and Hill, Felix and Levy, Omer and Bowman, Samuel R},
+  booktitle={EMNLP Workshop BlackboxNLP},
+  pages={353--355},
+  year={2018}
+}
+
+@inproceedings{superglue,
+  title={{SuperGLUE}: A Stickier Benchmark for General-Purpose Language Understanding Systems},
+  author={Wang, Alex and Pruksachatkun, Yada and Nangia, Nikita and Singh, Amanpreet and Michael, Julian and Hill, Felix and Levy, Omer and Bowman, Samuel R},
+  booktitle={Advances in Neural Information Processing Systems},
+  volume={32},
+  year={2019}
+}
+
+%==============================================================================
+% MASKED GENERATIVE / FLOW / CONTINUOUS DIFFUSION
+%==============================================================================
+
+@inproceedings{chang2022maskgit,
+  title={{MaskGIT}: Masked Generative Image Transformer},
+  author={Chang, Huiwen and Zhang, Han and Jiang, Lu and Liu, Ce and Freeman, William T},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={11315--11325},
+  year={2022}
+}
+
+@inproceedings{li2023mage,
+  title={{MAGE}: {MAsked} Generative Encoder to Unify Representation Learning and Image Synthesis},
+  author={Li, Tianhong and Chang, Huiwen and Mishra, Shlok Kumar and Zhang, Han and Katabi, Dina and Krishnan, Dilip},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={2142--2152},
+  year={2023}
+}
+
+@article{wang2018semi,
+  title={Semi-Autoregressive Neural Machine Translation},
+  author={Wang, Chunqi and Zhang, Ji and Chen, Haiqing},
+  booktitle={Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing},
+  pages={479--488},
+  year={2018}
+}
+
+@article{gulrajani2024likelihood,
+  title={Likelihood-Based Diffusion Language Models},
+  author={Gulrajani, Ishaan and Hashimoto, Tatsunori B},
+  journal={Advances in Neural Information Processing Systems},
+  volume={36},
+  year={2024}
+}
+
+@article{dieleman2022continuous,
+  title={Continuous Diffusion for Categorical Data},
+  author={Dieleman, Sander and Sartran, Laurent and Roshannai, Arman and Savinov, Nikolay and Ganin, Yaroslav and Richemond, Pierre H and Doucet, Arnaud and Strudel, Robin and Dyer, Chris and Durkan, Conor and others},
+  journal={arXiv preprint arXiv:2211.15089},
+  year={2022}
+}
+
+@article{zhang2024language,
+  title={Language Rectified Flow: Advancing Diffusion Language Generation with Probabilistic Flows},
+  author={Zhang, Shujian and Wu, Lemeng and Gong, Chengyue and Liu, Xingchao},
+  journal={arXiv preprint arXiv:2403.16995},
+  year={2024}
+}
+
+@inproceedings{hu2024flow,
+  title={Flow Matching for Conditional Text Generation in a Few Sampling Steps},
+  author={Hu, Vincent and Wu, Di and Asano, Yuki and Mettes, Pascal and Fernando, Basura and Ommer, Bj{\"o}rn and Snoek, Cees},
+  booktitle={Proceedings of the 18th Conference of the European Chapter of the Association for Computational Linguistics},
+  pages={380--392},
+  year={2024}
+}
+
+@article{campbell2024generative,
+  title={Generative Flows on Discrete State-Spaces: Enabling Multimodal Flows with Applications to Protein Co-Design},
+  author={Campbell, Andrew and Yim, Jason and Barzilay, Regina and Rainforth, Tom and Jaakkola, Tommi},
+  journal={arXiv preprint arXiv:2402.04997},
+  year={2024}
+}
+
+@article{bergstra2012random,
+  title={Random Search for Hyper-Parameter Optimization},
+  author={Bergstra, James and Bengio, Yoshua},
+  journal={Journal of Machine Learning Research},
+  volume={13},
+  pages={281--305},
+  year={2012}
+}
+
+@article{shi2024simplified,
+  title={Simplified and Generalized Masked Diffusion for Discrete Data},
+  author={Shi, Jiaxin and Han, Kehang and Wang, Zhe and Doucet, Arnaud and Titsias, Michalis K},
+  journal={Advances in Neural Information Processing Systems},
+  volume={37},
+  year={2024}
+}
+
+@article{schiff2025udlm,
+  title={Simple Guidance Mechanisms for Discrete Diffusion Models},
+  author={Schiff, Yair and Sahoo, Subham Sekhar and Phung, Hao and Wang, Guanghan and Bosselut, Antoine and Yun, Sungbin and Kuleshov, Volodymyr},
+  journal={Proceedings of the International Conference on Learning Representations},
+  year={2025}
+}
+
+@article{sahoo2025duo,
+  title={The Diffusion Duality},
+  author={Sahoo, Subham Sekhar and Schiff, Yair and Yun, Sungbin and Kuleshov, Volodymyr},
+  journal={Proceedings of the International Conference on Machine Learning},
+  year={2025}
+}
+
+@article{liu2025ddpd,
+  title={Discrete Denoising Posterior Prediction},
+  author={Liu, Zijing and Zhang, Ruiqi and Grover, Aditya},
+  journal={Proceedings of the International Conference on Learning Representations},
+  year={2025}
+}

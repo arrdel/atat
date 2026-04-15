@@ -1,0 +1,110 @@
+# @package _global_
+# MDLM Baseline - Uniform Random Masking
+# Standard masked diffusion without importance weighting (baseline for ATAT)
+
+defaults:
+  - /callbacks: [checkpoint_every_n_steps, learning_rate_monitor]
+  - /data: openwebtext
+  - /strategy: ddp
+  - /noise: loglinear
+  - /lr_scheduler: cosine_decay_warmup
+  - _self_
+
+# Basic settings
+mode: train
+diffusion: absorbing_state
+backbone: dit
+parameterization: subs
+time_conditioning: False
+T: 0
+subs_masking: False
+seed: 42
+
+# Model configuration - DiT
+model:
+  name: "mdlm_uniform_small"
+  type: "dit"
+  vocab_size: 50257
+  hidden_size: 768
+  cond_dim: 128
+  num_layers: 12
+  num_heads: 12
+  n_blocks: 12
+  n_heads: 12
+  length: 1024
+  scale_by_sigma: True
+  dropout: 0.1
+  temb_strategy: adaln
+  tie_word_embeddings: False
+
+# Data/loader settings
+loader:
+  global_batch_size: 256
+  eval_global_batch_size: 256
+  batch_size: 8
+  eval_batch_size: 4
+  num_workers: 4
+  pin_memory: True
+
+# Training settings - UNIFORM MASKING (standard MDLM)
+training:
+  ema: 0.9999
+  antithetic_sampling: True
+  importance_sampling: False
+  sampling_eps: 1e-3
+  change_of_variables: False
+
+# Sampling settings
+sampling:
+  predictor: ddpm_cache
+  steps: 128
+  noise_removal: True
+  num_sample_batches: 2
+  num_sample_log: 2
+  semi_ar: False
+  stride_length: 1
+  num_strides: 1
+
+# Evaluation settings
+eval:
+  checkpoint_path: ''
+  disable_ema: False
+  compute_generative_perplexity: False
+  perplexity_batch_size: 8
+  compute_perplexity_on_sanity: False
+  gen_ppl_eval_model_name_or_path: gpt2-large
+  generate_samples: True
+
+# Trainer settings
+trainer:
+  _target_: lightning.Trainer
+  num_nodes: 1
+  devices: 2
+  accumulate_grad_batches: 32
+  max_steps: 500000
+  val_check_interval: 5000
+  gradient_clip_val: 1.0
+  precision: "16-mixed"
+  log_every_n_steps: 50
+
+# Optimizer
+optim:
+  weight_decay: 0.01
+  lr: 3.0e-4
+  beta1: 0.9
+  beta2: 0.999
+  eps: 1.0e-8
+
+# Logging
+wandb:
+  project: "mdlm-baselines"
+  name: "mdlm-uniform-baseline"
+  tags: ["baseline", "mdlm", "uniform", "phase2"]
+  notes: "MDLM baseline with uniform random masking (no importance weighting)"
+  mode: "offline"
+
+# Checkpointing
+checkpointing:
+  save_dir: ./outputs/baselines/mdlm_uniform
+  resume_from_ckpt: false
+  resume_ckpt_path: ${.save_dir}/checkpoints/last.ckpt
