@@ -1,19 +1,5 @@
 """
-Adaptive Masking Scheduler (§3.2)
-
-Implements the balanced masking curriculum from the paper:
-
-    g_bal(i, t) = t · g_inv(i) + (1-t) · g_prop(i)
-
-where:
-    g_prop(i) = η + (1-2η) · i          (importance-proportional)
-    g_inv(i)  = η + (1-2η) · (1-i)      (importance-inverse)
-
-with smoothing η = 0.3, yielding masking probabilities in [0.3, 0.7].
-
-Position-dependent masking probability:
-    q_ATAT(z^l_t = [M] | x^l, i^l) = (1 - α_t) · g_bal(i^l, t)
-
+Adaptive Masking Scheduler
 Curriculum interpretation:
     t → 1 (heavy corruption): g_bal ≈ g_inv → preserve important tokens as anchors
     t → 0 (light corruption): g_bal ≈ g_prop → focus training on important tokens

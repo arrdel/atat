@@ -1,19 +1,10 @@
 """
-Curriculum Learning Scheduler (§3.3)
-
+Curriculum Learning Scheduler
 Implements the three-stage macro-level training curriculum:
 
     Stage 1 – Easy   (first 20% of steps):  focus on tokens with i ∈ [0, 0.3]
     Stage 2 – Medium (next  40% of steps):  focus on tokens with i ∈ [0.3, 0.7]
     Stage 3 – Hard   (final 40% of steps):  full range i ∈ [0, 1.0]
-
-Dynamic adaptation: extends a stage if denoising loss decreases < 1% per 10K steps.
-
-Training config (Table 9):
-    Easy phase   → Steps 0–200K    (first 20%)
-    Medium phase → Steps 200K–600K (next 40%)
-    Hard phase   → Steps 600K–1M   (final 40%)
-    Phase transition: smooth cosine interpolation.
 """
 
 import math

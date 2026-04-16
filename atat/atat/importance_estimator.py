@@ -1,19 +1,6 @@
 """
-Importance Estimator Module (§3.2)
-
-Implements the hybrid importance estimator from the paper:
-
-    i^l = λ · i^l_context + (1-λ) · i^l_freq,  λ = 0.7
-
-Contextual component (2-layer MLP, 200K params):
-    i^l_context = σ(W2 · GELU(W1 · LN(h^l_GPT2) + b1) + b2)
-    W1 ∈ R^{256×768}, W2 ∈ R^{1×256}
-
-Frequency component:
-    i^l_freq = 1 - log(freq(x^l) + 1) / log(max_freq + 1)
-
-Oracle targets (Eq. 4):
-    i^{l,*} = min(1, -log p_GPT2(x^l | x^{<l}) / τ),  τ = 10
+Importance Estimator Module
+Implements the hybrid importance estimator that combines learned contextual signals with a frequency-based prior.
 """
 
 import math

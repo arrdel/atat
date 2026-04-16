@@ -1,26 +1,7 @@
 """
-Uncertainty-Guided Decoding (§3.4, Algorithm 2)
-
+Uncertainty-Guided Decoding 
 Implements the token-level uncertainty sampling strategy used during
 ATAT inference.
-
-Priority score for each masked token l:
-
-    s^l  =  u^l · i^l
-
-where
-    u^l  =  H(p_θ(·|x_t))  =  −Σ_v p_v log p_v     (entropy)
-    i^l  =  importance score from the estimator
-
-Temperature sharpening before decoding:
-
-    κ  =  1 / (t / T + 0.1)
-
-Top-k unmasking per step:
-
-    k  =  ⌊ L · |α_{t+Δt} − α_t| ⌋
-
-Greedy decoding: argmax of sharpened logits for the top-k positions.
 """
 
 from typing import Optional, Tuple
