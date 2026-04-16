@@ -49,6 +49,9 @@ lightning_logs/
 *.pt
 *.bin
 
+# Submission
+submission/
+
 # LaTeX build artifacts
 paper/*.aux
 paper/*.log
