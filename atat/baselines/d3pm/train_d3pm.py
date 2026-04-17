@@ -244,9 +244,10 @@ def main():
         ModelCheckpoint(
             dirpath=checkpoint_dir,
             filename='d3pm-{step:06d}',
-            every_n_train_steps=10000,
-            save_top_k=-1,  # Save all checkpoints
-            save_last=True
+            every_n_train_steps=50000,
+            save_top_k=3,       # keep only the 3 most recent milestone checkpoints
+            save_last=True,
+            monitor=None,       # no metric monitoring — save by recency
         ),
         LearningRateMonitor(logging_interval='step')
     ]
@@ -272,7 +273,7 @@ def main():
         gradient_clip_val=config.training.gradient_clip if hasattr(config.training, 'gradient_clip') else 1.0,
         val_check_interval=5000,
         log_every_n_steps=100,
-        precision='16-mixed',  # Use mixed precision for efficiency
+        precision='bf16-mixed',  # bf16 avoids fp16 overflow (NaN) on long runs
         enable_progress_bar=True
     )
     
