@@ -357,6 +357,7 @@ def main():
         devices=args.num_gpus,
         strategy=strategy,
         max_steps=config.trainer.max_steps,
+        max_epochs=1,          # hard-stop Lightning from overrunning past max_steps
         precision='16-mixed',
         accumulate_grad_batches=config.trainer.accumulate_grad_batches,
         gradient_clip_val=config.trainer.gradient_clip_val if hasattr(config.trainer, 'gradient_clip_val') else 1.0,
