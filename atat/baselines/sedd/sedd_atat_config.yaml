@@ -1,0 +1,105 @@
+# SEDD + ATAT Configuration
+# Score Entropy Discrete Diffusion with importance-aware masking (ATAT)
+
+# Tokens and graph setup
+tokens: 50257  # GPT-2 vocabulary size
+graph:
+  type: absorb  # Absorbing state graph (mask token)
+
+# Noise schedule
+noise:
+  type: loglinear
+  eps: 1.0e-5
+
+# Model configuration - same as SEDD baseline
+model:
+  hidden_size: 768
+  n_blocks: 12
+  n_heads: 12
+  cond_dim: 768
+  dropout: 0.0
+  length: 1024
+  scale_by_sigma: false
+
+# ATAT importance estimator settings
+atat:
+  enabled: true
+  lambda_blend: 0.7        # λ: weight on contextual vs frequency importance
+  beta: 1.0                # importance loss weight
+  gamma: 0.003             # auxiliary loss coefficient
+  eta: 0.3                 # masking clip parameter
+  oracle_temp: 10.0        # oracle softmax temperature
+  freq_table_path: null    # auto-built from training data if null
+
+# Data configuration
+data:
+  train: openwebtext
+  valid: wikitext103
+  tokenizer_name_or_path: gpt2
+  cache_dir: ./data_cache
+  wrap: true
+  streaming: false
+
+# Loader settings — reduced batch due to frozen GPT-2 anchor overhead
+loader:
+  batch_size: 2            # Per GPU (halved vs baseline due to GPT-2 memory)
+  global_batch_size: 512
+  num_workers: 8
+  pin_memory: true
+
+# Training settings
+training:
+  ema: 0.9999
+  gradient_clip: 1.0
+  accum: 128               # doubled to keep effective batch size = 512
+
+# Optimizer
+optim:
+  lr: 3.0e-4
+  beta1: 0.9
+  beta2: 0.999
+  weight_decay: 0.01
+
+# Learning rate scheduler
+lr_scheduler:
+  warmup_steps: 10000
+  schedule: cosine
+
+# Trainer settings
+trainer:
+  accelerator: gpu
+  devices: 2
+  num_nodes: 1
+  precision: bf16-mixed    # bfloat16 — avoids fp16 overflow seen in D3PM baseline
+  max_steps: 500000
+  accumulate_grad_batches: 128
+  gradient_clip_val: 1.0
+  log_every_n_steps: 100
+  val_check_interval: 10000
+  limit_val_batches: 56
+
+# Sampling settings
+sampling:
+  predictor: analytic
+  steps: 128
+  noise_removal: true
+
+# Checkpointing
+checkpointing:
+  save_dir: ./outputs/generalizability/sedd_atat
+  every_n_train_steps: 10000
+  monitor: val/loss
+  mode: min
+  save_top_k: 3
+  save_last: true
+
+# WandB
+wandb:
+  project: atat-diffusion-baselines
+  name: sedd_atat
+  mode: disabled
+  log_model: false
+  tags:
+    - sedd
+    - atat
+    - generalizability
