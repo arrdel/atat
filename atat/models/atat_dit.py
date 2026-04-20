@@ -1,21 +1,7 @@
 """
-ATAT Model Architecture (§3, Appendix Table 8)
-
+ATAT Model Architecture
 Full model: frozen GPT-2 anchor → importance estimator → denoiser.
 
-Architecture specifications (from Appendix Table 8):
-    ╔══════════════════╦══════════════════════════════════════════════╗
-    ║ Component        ║ Specification                                ║
-    ╠══════════════════╬══════════════════════════════════════════════╣
-    ║ Anchor (frozen)  ║ GPT-2 Small: 124M, 12 layers, 768 hidden   ║
-    ║ Estimator        ║ 2-layer MLP: LN→768→256→GELU→256→1→σ       ║
-    ║ Denoiser         ║ 6-layer Transformer: 48M, 768h, 12 heads   ║
-    ║                  ║ RoPE, pre-LN, GELU, dropout=0.1             ║
-    ║                  ║ Init from GPT-2 layers 0-5                  ║
-    ║ Imp. projection  ║ W_i ∈ R^{768×2}, input [i^l; 1-i^l]        ║
-    ║ Trainable        ║ 49M (200K estimator + 48M denoiser)         ║
-    ║ Total            ║ 173M (124M frozen + 49M trainable)          ║
-    ╚══════════════════╩══════════════════════════════════════════════╝
 """
 
 import math

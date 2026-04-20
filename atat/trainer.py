@@ -4,15 +4,6 @@ ATAT Trainer (Appendix Algorithm 1, Table 9)
 DDP training loop with mixed-precision (AMP), curriculum scheduling,
 and combined loss L_ATAT = L_denoise + γ · L_importance.
 
-Training configuration (Table 9):
-    Optimizer:       AdamW, lr=3e-4, β1=0.9, β2=0.999, ε=1e-8, wd=0.01
-    Schedule:        Linear warmup (1K steps) + cosine decay
-    Gradient clip:   1.0
-    Precision:       FP16 mixed
-    Batch size:      64 (16 per GPU × 4 GPUs)
-    Sequence length: 1024
-    Total steps:     1,000,000
-    Hardware:        4× RTX 4090 (24 GB each), ~72 hours
 """
 
 import logging

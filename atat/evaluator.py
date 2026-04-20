@@ -3,18 +3,6 @@ ATAT Evaluator (Appendix §D.2, Table 10)
 
 NELBO-based perplexity evaluation following MDLM's protocol.
 
-Evaluation protocol:
-    - NELBO bound with 1000 NFE (number of function evaluations)
-    - Log-linear noise schedule: α_t = 1 - t
-    - Seed 42, averaged over 3 runs
-    - Benchmarks: WikiText-2, LAMBADA, PTB, LM1B, AG News, PubMed, ArXiv
-
-PPL is computed as:
-
-    NELBO = Σ_{t=1}^{T} E_{x_t ~ q(x_t|x_0)} [ -log p_θ(x_0 | x_t) · (α_t - α_{t-1}) / (1 - α_t) ]
-    PPL  = exp(NELBO / L)
-
-where L is the sequence length.
 """
 
 import logging
