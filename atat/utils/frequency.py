@@ -2,14 +2,7 @@
 Token Frequency Computation (§3.1)
 
 Computes per-token frequency statistics from the training corpus for
-the frequency component of the hybrid importance estimator:
-
-    i^l_freq = 1 - log(freq(x^l) + 1) / log(max_freq + 1)
-
-Rare tokens → high frequency importance, common tokens → low.
-
-Usage:
-    python -m atat.utils.frequency --data-dir ./data_cache --output freq_table.pt
+the frequency component of the hybrid importance estimator.
 """
 
 import argparse

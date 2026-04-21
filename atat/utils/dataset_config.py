@@ -3,19 +3,6 @@
 Provides unified interface to dataset configuration across training, evaluation, and validation.
 Supports debug, validation, and production stages with seamless switching.
 
-USAGE:
-    from atat.utils import get_dataset_manager
-    
-    # Get config for a phase
-    manager = get_dataset_manager()
-    config = manager.get_phase_config('A1_IMPORTANCE_ESTIMATOR_ABLATION')
-    
-    # Or get specific dataset
-    config = manager.get_config('openwebtext', variant='full')
-    
-    # Or use preset stages
-    manager = get_dataset_manager(preset='debug')
-    config = manager.get_config('openwebtext')
 """
 
 import yaml

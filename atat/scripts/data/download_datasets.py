@@ -7,26 +7,6 @@ This should be run ONCE before any training begins.
 
 Usage:
     python scripts/download_datasets.py [OPTIONS]
-
-Options:
-    --cache-dir PATH        Directory to cache datasets (default: ./data_cache)
-    --log-dir PATH          Directory for logs (default: ./logs)
-    --include-optional      Download optional evaluation datasets (LM1B, Text8, AG News)
-    --datasets NAMES        Comma-separated list of specific datasets to download
-                           (default: openwebtext,wikitext103,wikitext2,ptb)
-
-Examples:
-    # Download core datasets only
-    python scripts/download_datasets.py
-
-    # Download core + optional datasets
-    python scripts/download_datasets.py --include-optional
-
-    # Download to custom location
-    python scripts/download_datasets.py --cache-dir /custom/path/data_cache
-
-    # Download specific datasets
-    python scripts/download_datasets.py --datasets openwebtext,wikitext103
 """
 
 import argparse

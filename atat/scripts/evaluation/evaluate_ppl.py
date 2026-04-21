@@ -5,18 +5,6 @@ ATAT Perplexity Evaluation Script
 Evaluates ATAT and baseline models using NELBO-based perplexity
 on all 7 benchmarks from the paper.
 
-Protocol (Appendix §D.2):
-    - NELBO with 1000 NFE
-    - Log-linear noise schedule: α_t = 1 - t
-    - Seed 42, averaged over 3 evaluation runs
-    - Benchmarks: WikiText-2, LAMBADA, PTB, LM1B, AG News, PubMed, ArXiv
-
-Usage:
-    python scripts/evaluation/evaluate_ppl.py \\
-        --checkpoint outputs/checkpoints/atat_step_1000000.pt \\
-        --benchmarks wikitext2 lambada ptb \\
-        --nfe 1000 \\
-        --output-dir results/evaluation/
 """
 
 import argparse

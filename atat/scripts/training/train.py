@@ -14,23 +14,6 @@ Training Configuration (Appendix Table 9):
     Sequence length: 1024
     Total steps:     1,000,000 (~72 hours on 4× RTX 4090)
 
-Usage:
-    # Full training
-    python scripts/training/train.py \\
-        --max-steps 1000000 \\
-        --batch-size 16 \\
-        --lr 3e-4 \\
-        --output-dir outputs/
-
-    # Quick test
-    python scripts/training/train.py \\
-        --max-steps 1000 \\
-        --batch-size 4 \\
-        --output-dir outputs/test/
-
-    # Resume from checkpoint
-    python scripts/training/train.py \\
-        --resume outputs/checkpoints/atat_latest.pt
 """
 
 import argparse

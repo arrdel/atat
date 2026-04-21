@@ -7,9 +7,6 @@ Loads and packs sequences for training, following MDLM's protocol:
     - Pack into chunks of length L = 1024
     - No padding during training
 
-Usage:
-    from atat.utils.dataloader import create_train_dataloader
-    loader = create_train_dataloader(cache_dir="./data_cache", batch_size=64)
 """
 
 import logging
