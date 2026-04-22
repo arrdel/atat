@@ -1,17 +1,8 @@
 #!/usr/bin/env python3
 """
-Experiment 6: NFE Trade-off  (Appendix Table – tab:nfe-full)
+ NFE Trade-off  
 ============================================================
 
-Reproduces the NFE vs. PPL trade-off analysis: evaluates perplexity
-at different sampling budgets (NFE = 64, 128, 256, 512, 1024).
-
-Shows that ATAT's uncertainty-guided sampling improves PPL at all
-NFE budgets compared to MDLM's uniform sampling.
-
-Usage:
-    python experiments/06_nfe_tradeoff.py \\
-        --atat-checkpoint outputs/checkpoints/atat_step_1000000.pt
 """
 
 import argparse

@@ -1,18 +1,8 @@
 #!/usr/bin/env python3
 """
-Experiment 5: Lambda Sensitivity  (Table 5 – tab:lambda-sensitivity)
+ Lambda Sensitivity  (Table 5 – tab:lambda-sensitivity)
 ====================================================================
 
-Reproduces Table 5 from the paper: sensitivity to the hybrid weight λ
-that balances contextual and frequency importance.
-
-    i^l = λ · i^l_context + (1 - λ) · i^l_freq
-
-50K-step ablation runs on 10% OWT, WikiText-2 validation PPL.
-
-Usage:
-    python experiments/05_lambda_sensitivity.py \\
-        --checkpoint-dir outputs/ablations/lambda/
 """
 
 import argparse

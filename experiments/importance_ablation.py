@@ -1,20 +1,6 @@
 #!/usr/bin/env python3
 """
-Experiment 2: Importance Estimation Ablation  (Table 2 – tab:hybrid-discovery)
-==============================================================================
-
-Reproduces Table 2 from the paper: importance estimation ablation on
-WikiText-2 validation PPL (50K-step ablation runs on 10% OWT subset).
-
-Variants:
-    Uniform (no importance)  → baseline
-    Frequency only           → i^l_freq
-    Contextual only          → f_φ(h^l)
-    Hybrid (λ=0.7)           → 0.7·context + 0.3·freq   [BEST]
-
-Usage:
-    python experiments/02_importance_ablation.py \\
-        --checkpoint-dir outputs/ablations/importance/
+Importance Estimation Ablation 
 """
 
 import argparse

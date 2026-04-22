@@ -1,18 +1,7 @@
 #!/usr/bin/env python3
 """
-Experiment 7: POS Importance Analysis  (Table 6 – tab:pos-importance)
-=====================================================================
+POS Importance Analysis  
 
-Reproduces Table 6 from the paper: linguistic alignment of learned
-importance scores by part-of-speech (POS) tag on WikiText-2 validation.
-
-Shows that content words (proper nouns: 0.78, nouns: 0.62, verbs: 0.58)
-receive higher importance than function words (determiners: 0.21,
-punctuation: 0.15), validating the information-theoretic foundation.
-
-Usage:
-    python experiments/07_pos_importance.py \\
-        --atat-checkpoint outputs/checkpoints/atat_step_1000000.pt
 """
 
 import argparse

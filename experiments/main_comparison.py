@@ -1,18 +1,8 @@
 #!/usr/bin/env python3
 """
-Experiment 1: Main Perplexity Comparison  (Table 1 – tab:main)
+ Main Perplexity Comparison 
 ==============================================================
 
-Reproduces Table 1 from the paper: perplexity comparison across models.
-Baselines: AR (GPT-2 retrained), D3PM, SEDD, MDLM, ADLM.
-Ours: ATAT (500K) and ATAT (1M).
-
-Evaluation datasets: LM1B, WikiText-2, LAMBADA, PTB.
-All DLM perplexities evaluated at 1000 NFE using NELBO.
-
-Usage:
-    python experiments/01_main_comparison.py \\
-        --atat-checkpoint outputs/checkpoints/atat_step_1000000.pt
 """
 
 import argparse

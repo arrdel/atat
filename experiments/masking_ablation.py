@@ -1,20 +1,8 @@
 #!/usr/bin/env python3
 """
-Experiment 4: Masking Strategy Ablation  (Table 4 – tab:masking-ablation)
+Masking Strategy Ablation 
 =========================================================================
 
-Reproduces Table 4 from the paper: masking strategy ablation on WikiText-2
-validation PPL (50K-step runs on 10% OWT subset).
-
-Strategies:
-    Uniform (MDLM baseline)
-    Importance-proportional   g_prop(i) = η + (1-2η)·i
-    Importance-inverse        g_inv(i) = η + (1-2η)·(1-i)
-    Balanced (ours)           g_bal(i,t) = t·g_inv(i) + (1-t)·g_prop(i)
-
-Usage:
-    python experiments/04_masking_ablation.py \\
-        --checkpoint-dir outputs/ablations/masking/
 """
 
 import argparse
