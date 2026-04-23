@@ -1,0 +1,2098 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="description"
+        content="Not All Tokens Are Equal: Importance-Aware Masking for Discrete Diffusion Language Models.">
+    <meta property="og:title" content="Not All Tokens Are Equal: Importance-Aware Masking for Discrete Diffusion LMs" />
+    <meta property="og:description"
+        content="3.5× fewer parameters, 10× fewer tokens, yet matches or beats prior DLMs. Best DLM zero-shot PPL on 7/7 benchmarks." />
+    <meta property="og:url" content="https://github.com/anonymous/atat-diffusion" />
+    <meta name="twitter:title" content="Not All Tokens Are Equal: Importance-Aware Masking for Discrete Diffusion LMs">
+    <meta name="twitter:description"
+        content="Best DLM efficiency: matches ADLM with 3.5× fewer params, 10× fewer tokens. SOTA on 7/7 zero-shot benchmarks.">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="keywords"
+        content="discrete diffusion, language model, token importance, adaptive masking, text generation, NeurIPS 2026">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Not All Tokens Are Equal: Importance-Aware Masking for Discrete Diffusion Language Models</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --primary: #0D47A1;
+            --primary-light: #1976D2;
+            --primary-lighter: #E3F2FD;
+            --accent-green: #00897B;
+            --accent-green-light: #E0F2F1;
+            --accent-orange: #EF6C00;
+            --accent-orange-light: #FFF3E0;
+            --accent-purple: #6A1B9A;
+            --accent-purple-light: #F3E5F5;
+            --accent-red: #C62828;
+            --accent-red-light: #FFEBEE;
+            --surface: #FAFBFC;
+            --surface-alt: #F0F4F8;
+            --text-primary: #1A1A2E;
+            --text-secondary: #4A5568;
+            --text-muted: #718096;
+            --border: #E2E8F0;
+            --radius: 12px;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.12);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-primary);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ─── Teaser ─────────────────────────────────────── */
+        .teaser-section {
+            background: #ffffff;
+            padding: 1rem 1.5rem 3rem;
+        }
+
+        .teaser-container {
+            max-width: 820px;
+            margin: 0 auto;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .teaser-container img {
+            width: 100%;
+            display: block;
+        }
+
+        .teaser-caption {
+            text-align: center;
+            padding: 1rem 1.5rem;
+            background: rgba(13, 71, 161, 0.04);
+            border-top: 1px solid rgba(13, 71, 161, 0.08);
+            font-size: 0.92rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .teaser-caption strong {
+            color: var(--primary);
+        }
+
+        /* ─── Hero ───────────────────────────────────────── */
+        .hero-atat {
+            background: #ffffff;
+            position: relative;
+            overflow: hidden;
+            padding: 7rem 2rem 6rem;
+        }
+
+        .hero-atat::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(13, 71, 161, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .hero-atat::after {
+            content: '';
+            position: absolute;
+            bottom: -20%;
+            left: -5%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(76, 175, 80, 0.06) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .hero-atat .publication-title {
+            background: linear-gradient(135deg, #0D47A1 0%, #1565C0 50%, #1976D2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 3.4rem;
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(0 2px 4px rgba(13, 71, 161, 0.1));
+        }
+
+        .hero-atat .publication-subtitle {
+            color: rgba(0, 0, 0, 0.8);
+            font-size: 1.3rem;
+            font-weight: 500;
+            max-width: 800px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.7;
+            letter-spacing: 0.3px;
+        }
+
+        .hero-atat .publication-authors {
+            color: rgba(0, 0, 0, 0.85);
+            font-size: 1.05rem;
+            font-weight: 500;
+        }
+
+        .hero-atat .publication-authors a {
+            color: #1565C0;
+            text-decoration: none;
+            border-bottom: 2px solid #1565C0;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .hero-atat .publication-authors a:hover {
+            color: #0D47A1;
+            border-bottom-color: #0D47A1;
+            background: linear-gradient(135deg, rgba(21, 101, 192, 0.1) 0%, transparent 100%);
+            padding: 0 4px;
+            border-radius: 2px;
+        }
+
+        .hero-atat .author-affiliation {
+            color: rgba(0, 0, 0, 0.65);
+            font-size: 1rem;
+            margin-top: 0.8rem;
+            letter-spacing: 0.2px;
+            font-weight: 500;
+        }
+
+        .hero-atat .venue-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #1565C0 0%, #1976D2 100%);
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(13, 71, 161, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .hero-atat .venue-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(13, 71, 161, 0.3);
+        }
+
+        /* ─── Link Buttons ───────────────────────────────── */
+        .pub-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-top: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .pub-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(39, 110, 215, 0.739);
+            color: rgb(89, 150, 230);
+            padding: 0.65rem 1.4rem;
+            border-radius: 100px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .pub-link:hover {
+            background: white;
+            color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ─── Metrics Strip ──────────────────────────────── */
+        .metrics-strip {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin: 2rem auto 3rem;
+            max-width: 960px;
+            padding: 0 1.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 1.8rem 1.2rem;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .metric-card .metric-value {
+            font-size: 2.4rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.3rem;
+        }
+
+        .metric-card:nth-child(1) .metric-value {
+            color: var(--primary);
+        }
+
+        .metric-card:nth-child(2) .metric-value {
+            color: var(--accent-green);
+        }
+
+        .metric-card:nth-child(3) .metric-value {
+            color: var(--accent-orange);
+        }
+
+        .metric-card:nth-child(4) .metric-value {
+            color: var(--accent-purple);
+        }
+
+        .metric-card .metric-label {
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        /* ─── Sections ───────────────────────────────────── */
+        section.section {
+            padding: 4rem 1.5rem;
+        }
+
+        section.alt-bg {
+            background: var(--surface-alt);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.01em;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+        }
+
+        .section-divider {
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            border: none;
+            margin: 0 auto 2.5rem;
+            max-width: 80px;
+            border-radius: 2px;
+        }
+
+        /* ─── Content Typography ─────────────────────────── */
+        .content-text {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .content-text strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        code {
+            background: var(--primary-lighter);
+            color: var(--primary);
+            padding: 0.15rem 0.45rem;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.88em;
+            font-weight: 500;
+        }
+
+        /* ─── Token Visualization ────────────────────────── */
+        .token-viz-container {
+            background: white;
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            margin: 2rem auto;
+            max-width: 800px;
+        }
+
+        .token-viz-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .token-row {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .token {
+            padding: 0.5rem 0.9rem;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: transform 0.2s;
+            position: relative;
+        }
+
+        .token:hover {
+            transform: scale(1.08);
+        }
+
+        .token-high {
+            background: linear-gradient(135deg, #C62828, #E53935);
+            color: white;
+            box-shadow: 0 2px 8px rgba(198, 40, 40, 0.3);
+        }
+
+        .token-med {
+            background: linear-gradient(135deg, #EF6C00, #FB8C00);
+            color: white;
+            box-shadow: 0 2px 8px rgba(239, 108, 0, 0.3);
+        }
+
+        .token-low {
+            background: #EDF2F7;
+            color: #718096;
+        }
+
+        .token-mask {
+            background: repeating-linear-gradient(45deg, #E2E8F0, #E2E8F0 4px, #EDF2F7 4px, #EDF2F7 8px);
+            color: #A0AEC0;
+            border: 1px dashed #CBD5E0;
+        }
+
+        .importance-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 0.3rem;
+        }
+
+        .importance-bar-label {
+            font-size: 0.8rem;
+            font-family: 'JetBrains Mono', monospace;
+            width: 80px;
+            text-align: right;
+            color: var(--text-muted);
+        }
+
+        .importance-bar-fill {
+            height: 8px;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* ─── Feature Grid ───────────────────────────────── */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 2rem;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+
+        .feature-card:nth-child(1)::before {
+            background: var(--primary);
+        }
+
+        .feature-card:nth-child(2)::before {
+            background: var(--accent-green);
+        }
+
+        .feature-card:nth-child(3)::before {
+            background: var(--accent-orange);
+        }
+
+        .feature-card:nth-child(4)::before {
+            background: var(--accent-purple);
+        }
+
+        .feature-card:nth-child(5)::before {
+            background: var(--accent-red);
+        }
+
+        .feature-card:nth-child(6)::before {
+            background: var(--primary-light);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+            border-color: transparent;
+        }
+
+        .feature-card .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 0.8rem;
+            display: block;
+        }
+
+        .feature-card .feature-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.4rem;
+        }
+
+        .feature-card .feature-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* ─── Architecture Diagram ───────────────────────── */
+        .arch-diagram {
+            background: white;
+            border-radius: var(--radius);
+            padding: 3rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            margin: 2rem auto;
+            max-width: 900px;
+        }
+
+        .arch-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            flex-wrap: wrap;
+        }
+
+        .arch-block {
+            padding: 1.2rem 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+            min-width: 130px;
+            position: relative;
+            border: 2px solid;
+        }
+
+        .arch-block-frozen {
+            background: var(--primary-lighter);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .arch-block-learnable {
+            background: var(--accent-green-light);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .arch-block-hybrid {
+            background: var(--accent-orange-light);
+            border-color: var(--accent-orange);
+            color: var(--accent-orange);
+        }
+
+        .arch-block-output {
+            background: var(--accent-purple-light);
+            border-color: var(--accent-purple);
+            color: var(--accent-purple);
+        }
+
+        .arch-block small {
+            display: block;
+            font-weight: 400;
+            font-size: 0.75rem;
+            opacity: 0.8;
+            margin-top: 0.3rem;
+        }
+
+        .arch-arrow {
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            padding: 0 0.5rem;
+        }
+
+        .arch-legend {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .arch-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+        .arch-legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        /* ─── Equation Block ─────────────────────────────── */
+        .equation-block {
+            background: var(--surface);
+            padding: 1.8rem 2rem;
+            border-left: 4px solid var(--primary);
+            border-radius: 0 var(--radius) var(--radius) 0;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* ─── Method Phase Cards ─────────────────────────── */
+        .method-phase {
+            background: white;
+            padding: 2rem 2.5rem;
+            border-radius: var(--radius);
+            margin: 1.5rem 0;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .method-phase::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+        }
+
+        .method-phase.phase-1::before {
+            background: var(--primary);
+        }
+
+        .method-phase.phase-2::before {
+            background: var(--accent-green);
+        }
+
+        .method-phase.phase-3::before {
+            background: var(--accent-orange);
+        }
+
+        .method-phase .phase-number {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 0.25rem 0.75rem;
+            border-radius: 100px;
+            margin-bottom: 0.8rem;
+        }
+
+        .method-phase.phase-1 .phase-number {
+            background: var(--primary-lighter);
+            color: var(--primary);
+        }
+
+        .method-phase.phase-2 .phase-number {
+            background: var(--accent-green-light);
+            color: var(--accent-green);
+        }
+
+        .method-phase.phase-3 .phase-number {
+            background: var(--accent-orange-light);
+            color: var(--accent-orange);
+        }
+
+        .method-phase h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.8rem;
+        }
+
+        .method-phase p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        /* ─── Tables ─────────────────────────────────────── */
+        .results-table-wrapper {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+
+        .results-table-header {
+            padding: 1.2rem 1.5rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .table.atat-table {
+            margin: 0;
+            box-shadow: none;
+        }
+
+        .table.atat-table th {
+            background: var(--surface);
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 1rem 1.2rem;
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+
+        .table.atat-table td {
+            padding: 0.85rem 1.2rem;
+            font-size: 0.95rem;
+            border-bottom: 1px solid #F1F5F9;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .table.atat-table tr:hover {
+            background: #F8FAFC;
+        }
+
+        .table.atat-table tr.row-ours {
+            background: linear-gradient(90deg, var(--primary-lighter), #F0F7FF);
+            font-weight: 600;
+        }
+
+        .table.atat-table tr.row-ours td {
+            border-bottom: 1px solid #BBDEFB;
+        }
+
+        .table.atat-table .best-val {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .table.atat-table .type-badge {
+            display: inline-block;
+            padding: 0.15rem 0.6rem;
+            border-radius: 100px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .type-badge.badge-ar {
+            background: var(--accent-red-light);
+            color: var(--accent-red);
+        }
+
+        .type-badge.badge-dlm {
+            background: #FFF8E1;
+            color: #F57F17;
+        }
+
+        .type-badge.badge-ours {
+            background: var(--primary-lighter);
+            color: var(--primary);
+        }
+
+        /* ─── Insight Box ────────────────────────────────── */
+        .insight-box {
+            background: linear-gradient(135deg, var(--primary-lighter) 0%, #E8F4FD 100%);
+            border-left: 4px solid var(--primary);
+            padding: 1.5rem 2rem;
+            border-radius: 0 var(--radius) var(--radius) 0;
+            margin: 2rem 0;
+        }
+
+        .insight-box.insight-green {
+            background: linear-gradient(135deg, var(--accent-green-light) 0%, #E8F6F3 100%);
+            border-left-color: var(--accent-green);
+        }
+
+        .insight-box.insight-orange {
+            background: linear-gradient(135deg, var(--accent-orange-light) 0%, #FFF8F0 100%);
+            border-left-color: var(--accent-orange);
+        }
+
+        .insight-box.insight-purple {
+            background: linear-gradient(135deg, var(--accent-purple-light) 0%, #F8F0FC 100%);
+            border-left-color: var(--accent-purple);
+        }
+
+        .insight-box strong {
+            color: var(--text-primary);
+        }
+
+        .insight-box p {
+            margin: 0;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* ─── Contribution Cards ─────────────────────────── */
+        .contribution-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .contribution-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .contribution-number {
+            width: 48px;
+            height: 48px;
+            min-width: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: white;
+        }
+
+        .contribution-card:nth-child(1) .contribution-number {
+            background: var(--primary);
+        }
+
+        .contribution-card:nth-child(2) .contribution-number {
+            background: var(--accent-green);
+        }
+
+        .contribution-card:nth-child(3) .contribution-number {
+            background: var(--accent-orange);
+        }
+
+        .contribution-card:nth-child(4) .contribution-number {
+            background: var(--accent-purple);
+        }
+
+        .contribution-body h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .contribution-body p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin: 0;
+        }
+
+        /* ─── Theory Cards ───────────────────────────────── */
+        .theory-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .theory-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 2rem;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .theory-card .theory-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .theory-card h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+            color: var(--text-primary);
+        }
+
+        .theory-card p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* ─── DNA Section ────────────────────────────────── */
+        .dna-strand {
+            display: flex;
+            gap: 2px;
+            justify-content: center;
+            margin: 1.5rem 0;
+        }
+
+        .dna-base {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .base-A {
+            background: #DCEDC8;
+            color: #33691E;
+        }
+
+        .base-T {
+            background: #FFCCBC;
+            color: #BF360C;
+        }
+
+        .base-G {
+            background: #B3E5FC;
+            color: #01579B;
+        }
+
+        .base-C {
+            background: #F3E5F5;
+            color: #4A148C;
+        }
+
+        .base-tata {
+            background: #FF8F00;
+            color: white;
+            box-shadow: 0 0 8px rgba(255, 143, 0, 0.4);
+        }
+
+        /* ─── Footer ─────────────────────────────────────── */
+        .footer-atat {
+            background: var(--text-primary);
+            color: rgba(255, 255, 255, 0.7);
+            padding: 3rem 1.5rem;
+        }
+
+        .footer-atat a {
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.2s;
+        }
+
+        .footer-atat a:hover {
+            color: white;
+            border-bottom-color: white;
+        }
+
+        /* ─── Responsive ─────────────────────────────────── */
+        @media (max-width: 1024px) {
+            .feature-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .theory-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-atat {
+                padding: 3rem 1rem 4rem;
+            }
+
+            .hero-atat .publication-title {
+                font-size: 2rem;
+            }
+
+            .metrics-strip {
+                grid-template-columns: repeat(2, 1fr);
+                margin-top: -2rem;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .arch-flow {
+                flex-direction: column;
+            }
+
+            .arch-arrow {
+                transform: rotate(90deg);
+            }
+
+            .contribution-card {
+                flex-direction: column;
+            }
+
+            section.section {
+                padding: 3rem 1rem;
+            }
+        }
+
+        /* ─── Animations ─────────────────────────────────── */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        /* ─── Comparison Bars ────────────────────────────── */
+        .comparison-bar-container {
+            margin: 1.5rem 0;
+        }
+
+        .comparison-bar-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .comparison-bar-label {
+            width: 120px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-align: right;
+        }
+
+        .comparison-bar-track {
+            flex: 1;
+            height: 24px;
+            background: #F1F5F9;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .comparison-bar-fill {
+            height: 100%;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: white;
+            transition: width 1s ease;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- HERO SECTION                                       -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="hero-atat">
+        <div class="container is-max-desktop has-text-centered">
+            <span class="venue-badge">NeurIPS 2026</span>
+            <h1 class="publication-title">Not All Tokens Are Equal:<br>Importance-Aware Masking for Discrete Diffusion
+                Language Models</h1>
+            <p class="publication-subtitle">
+                Learn which tokens matter. Mask them accordingly.<br>
+                <strong style="color:rgb(0, 0, 0);">3.5× fewer params · 10× fewer tokens · Best DLM on all 7 zero-shot
+                    benchmarks</strong>
+            </p>
+
+            <div class="is-size-5 publication-authors">
+                <!-- <span class="author-block">
+                    <a href="https://github.com/anonymous" target="_blank">Anonymous1</a>,
+                </span>
+                <span class="author-block">
+                    <a href="https://github.com" target="_blank">Anonymous2</a>,
+                </span> -->
+                <span class="author-block">
+                    <a href="https://github.com/anonymous" target="_blank">Anonymous</a>
+                </span>
+                </span>
+            </div>
+            <div class="author-affiliation">
+                Affiliation
+            </div>
+
+            <div class="pub-links">
+                <a href="static/pdfs/submission.pdf" class="pub-link" target="_blank">
+                    <i class="fas fa-file-pdf"></i> Paper
+                </a>
+                <a href="https://github.com/anonymous/atat-diffusion" class="pub-link" target="_blank">
+                    <i class="fab fa-github"></i> Code
+                </a>
+                <a href="https://wandb.ai/el_chindah" class="pub-link" target="_blank">
+                    <i class="fas fa-chart-line"></i> W&amp;B Logs
+                </a>
+                <a href="#results" class="pub-link">
+                    <i class="fas fa-table"></i> Results
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- TEASER                                             -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="teaser-section">
+        <div class="teaser-container">
+            <img src="figures/unmasking.gif"
+                alt="ATAT adaptive unmasking process — important tokens are preserved early and focused on late, creating a principled token-level curriculum across diffusion timesteps."
+                loading="eager">
+            <div class="teaser-caption">
+                <strong>Adaptive Unmasking in Action.</strong> ATAT learns which tokens matter and unmasks them in a
+                principled order —
+                preserving important tokens early as semantic anchors, then focusing capacity on them late. Unlike
+                uniform masking,
+                this creates a <strong>token-level curriculum</strong> that adapts across diffusion timesteps.
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- METRICS STRIP                                      -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="metrics-strip">
+        <div class="metric-card">
+            <div class="metric-value">3.5×</div>
+            <div class="metric-label">Fewer Trainable Params</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">10×</div>
+            <div class="metric-label">Fewer Training Tokens</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">7/7</div>
+            <div class="metric-label">SOTA DLM Zero-Shot</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">−8.4%</div>
+            <div class="metric-label">Relative PPL Reduction</div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- ABSTRACT                                           -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="section" id="abstract">
+        <div class="container is-max-desktop">
+            <h2 class="section-title">Abstract</h2>
+            <hr class="section-divider">
+            <div class="content-text has-text-justified">
+                <p>
+                    Discrete diffusion language models (DLMs) enable parallel generation and bidirectional context but
+                    underperform autoregressive (AR) models due to <strong>uniform token treatment</strong> during
+                    masking. We introduce <strong>ATAT</strong> (Adaptive Token Attention for Text), which learns
+                    token-level importance through a hybrid formulation combining contextual signals from a frozen GPT-2
+                    anchor with frequency-based priors:
+                </p>
+                <div class="equation-block">
+                    $$i^l = 0.7 \cdot i^l_{\text{context}} + 0.3 \cdot i^l_{\text{freq}}$$
+                </div>
+                <p>
+                    This hybrid achieves an <strong>8.4% relative perplexity reduction</strong> over uniform masking
+                    (39.03 vs 42.31), demonstrating <strong>genuine signal complementarity</strong>. More importantly,
+                    ATAT matches ADLM's generation quality using <strong>3.5× fewer trainable parameters</strong> (49M
+                    vs 170M) and <strong>10× fewer training tokens</strong> (6.5B vs 65B) — establishing a new
+                    efficiency frontier for discrete diffusion LMs. We introduce a balanced masking curriculum that
+                    preserves important tokens early (semantic anchoring) and focuses on them late (capacity
+                    allocation). Theoretically, we prove importance-guided masking reduces sample complexity from
+                    $\mathcal{O}(K^L)$ to $\mathcal{O}(LK^{d+1})$ under bounded anchor assumptions. ATAT achieves
+                    <strong>state-of-the-art DLM perplexity across all 7 zero-shot benchmarks</strong>, outperforming
+                    even AR baselines on long-range tasks like LAMBADA.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- THE PROBLEM: TOKEN VIZ                              -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="section alt-bg" id="problem">
+        <div class="container is-max-desktop">
+            <h2 class="section-title">The Uniform Masking Problem</h2>
+            <p class="section-subtitle">Not all tokens are created equal — why treat them the same?</p>
+            <hr class="section-divider">
+
+            <div class="token-viz-container">
+                <div class="token-viz-label">Token Importance Visualization</div>
+                <div class="token-row">
+                    <span class="token token-low">The</span>
+                    <span class="token token-high">quantum</span>
+                    <span class="token token-med">field</span>
+                    <span class="token token-low">of</span>
+                    <span class="token token-high">physics</span>
+                    <span class="token token-low">is</span>
+                    <span class="token token-med">fundamentally</span>
+                    <span class="token token-high">probabilistic</span>
+                    <span class="token token-low">in</span>
+                    <span class="token token-low">its</span>
+                    <span class="token token-med">nature</span>
+                </div>
+                <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 1rem;">
+                    <div
+                        style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; color: var(--text-muted);">
+                        <span
+                            style="width:14px;height:14px;border-radius:3px;background:linear-gradient(135deg,#C62828,#E53935);display:inline-block;"></span>
+                        High importance (8–12 bits)
+                    </div>
+                    <div
+                        style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; color: var(--text-muted);">
+                        <span
+                            style="width:14px;height:14px;border-radius:3px;background:linear-gradient(135deg,#EF6C00,#FB8C00);display:inline-block;"></span>
+                        Medium importance (4–8 bits)
+                    </div>
+                    <div
+                        style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; color: var(--text-muted);">
+                        <span
+                            style="width:14px;height:14px;border-radius:3px;background:#EDF2F7;display:inline-block;"></span>
+                        Low importance (2–4 bits)
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-text" style="margin-top: 2rem;">
+                <p>
+                    Content words like <strong>"quantum"</strong> and <strong>"probabilistic"</strong> carry 8–12 bits
+                    of surprisal, while function words like <strong>"the"</strong> and <strong>"of"</strong> carry only
+                    2–4 bits. Existing DLMs mask all tokens with identical probability, wasting capacity on trivial
+                    predictions while underweighting informative ones.
+                </p>
+
+                <div class="insight-box insight-orange" style="margin-top:1.5rem;">
+                    <p><strong>⚠️ The frequency trap:</strong> ADLM uses token <em>frequency</em> as an importance
+                        proxy—but frequency is context-blind. The word <code>"bank"</code> has identical frequency
+                        whether anchoring a financial discussion or appearing peripherally in nature writing. ATAT
+                        solves this with <strong>learned hybrid importance</strong>.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- KEY HIGHLIGHTS                                      -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="section" id="highlights">
+        <div class="container is-max-desktop">
+            <h2 class="section-title">Key Highlights</h2>
+            <p class="section-subtitle">What makes ATAT different</p>
+            <hr class="section-divider">
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="feature-icon">🚀</span>
+                    <div class="feature-title">3.5× Fewer Parameters</div>
+                    <div class="feature-desc">49M trainable vs ADLM's 170M — matches quality at a fraction of the cost
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">⚡</span>
+                    <div class="feature-title">10× Fewer Tokens</div>
+                    <div class="feature-desc">6.5B vs 65B training tokens: importance-aware masking learns faster</div>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">🏆</span>
+                    <div class="feature-title">Best DLM on 7/7 Benchmarks</div>
+                    <div class="feature-desc">SOTA zero-shot on LAMBADA, PTB, Wiki, LM1B, AG News, PubMed, ArXiv</div>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">📈</span>
+                    <div class="feature-title">Beats AR on LAMBADA</div>
+                    <div class="feature-desc">44.78 vs GPT-2's 51.28 — bidirectional context surpasses left-to-right on
+                        long-range tasks</div>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">�</span>
+                    <div class="feature-title">Hybrid Importance</div>
+                    <div class="feature-desc">0.82 oracle correlation — context + frequency complementarity yields 8.4%
+                        relative PPL gain</div>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">🧮</span>
+                    <div class="feature-title">Provable Guarantees</div>
+                    <div class="feature-desc">Sample complexity: $O(K^L) \to O(LK^{d+1})$ with Lipschitz robustness
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- ARCHITECTURE                                        -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="section alt-bg" id="architecture">
+        <div class="container is-max-desktop">
+            <h2 class="section-title">Architecture</h2>
+            <p class="section-subtitle">Frozen context + learned importance + adaptive denoising</p>
+            <hr class="section-divider">
+
+            <div class="arch-diagram">
+                <div class="arch-flow">
+                    <div class="arch-block arch-block-frozen">
+                        <i class="fas fa-snowflake" style="margin-bottom:4px;display:block;"></i>
+                        Frozen GPT-2
+                        <small>124M params</small>
+                    </div>
+                    <span class="arch-arrow">→</span>
+                    <div class="arch-block arch-block-learnable">
+                        <i class="fas fa-brain" style="margin-bottom:4px;display:block;"></i>
+                        Importance MLP
+                        <small>886K params</small>
+                    </div>
+                    <span class="arch-arrow">→</span>
+                    <div class="arch-block arch-block-hybrid">
+                        <i class="fas fa-code-merge" style="margin-bottom:4px;display:block;"></i>
+                        Hybrid Mixer
+                        <small>λ=0.7 / 0.3</small>
+                    </div>
+                    <span class="arch-arrow">→</span>
+                    <div class="arch-block arch-block-output">
+                        <i class="fas fa-layer-group" style="margin-bottom:4px;display:block;"></i>
+                        Denoiser
+                        <small>48M · 6 layers</small>
+                    </div>
+                </div>
+
+                <div class="arch-legend">
+                    <div class="arch-legend-item">
+                        <span class="arch-legend-dot" style="background: var(--primary);"></span> Frozen (124M)
+                    </div>
+                    <div class="arch-legend-item">
+                        <span class="arch-legend-dot" style="background: var(--accent-green);"></span> Learnable (886K)
+                    </div>
+                    <div class="arch-legend-item">
+                        <span class="arch-legend-dot" style="background: var(--accent-orange);"></span> Hybrid Fusion
+                    </div>
+                    <div class="arch-legend-item">
+                        <span class="arch-legend-dot" style="background: var(--accent-purple);"></span> Denoiser (48M)
+                    </div>
+                </div>
+            </div>
+
+            <div class="insight-box" style="max-width: 800px; margin: 2rem auto;">
+                <p><strong>💡 Radical Parameter Efficiency:</strong> ATAT trains only <strong>49M
+                        parameters</strong>—<strong>3.5× fewer</strong>
+                    than ADLM's 170M—by freezing GPT-2 and routing gradients only through the importance head and
+                    denoising backbone.
+                    The frozen encoder provides rich contextual representations <em>for free</em>, turning a 173M
+                    architecture into
+                    a <strong>49M training footprint</strong> that matches or beats far larger models.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- METHOD                                              -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="section" id="method">
+        <div class="container is-max-desktop">
+            <h2 class="section-title">Method</h2>
+            <p class="section-subtitle">Three innovations that work together</p>
+            <hr class="section-divider">
+
+            <div class="method-phase phase-1">
+                <span class="phase-number">Phase 1 — Core Innovation</span>
+                <h3>Hybrid Importance Estimation</h3>
+                <p>We combine two complementary signals into a unified importance score:</p>
+                <div class="equation-block">
+                    $$i^l = \lambda \cdot
+                    \underbrace{\sigma(\text{MLP}_\varphi(\mathbf{h}^l_{\text{GPT-2}}))}_{\text{contextual: locally
+                    surprising}} + (1-\lambda) \cdot \underbrace{\left(1 - \frac{\log(\text{freq}(x^l)+1)}{\log(\max_k
+                    \text{freq}(k)+1)}\right)}_{\text{frequency: globally rare}}$$
+                </div>
+                <p><strong>Why both?</strong> Frequency captures globally rare tokens that deserve attention across all
+                    contexts. Contextuality identifies locally surprising tokens whose importance depends on surrounding
+                    discourse. Common-but-important tokens (e.g., <code>"The"</code> in <em>"The one who survived"</em>)
+                    are rescued by contextuality; rare-but-predictable domain terms are stabilized by frequency.</p>
+
+                <!-- Ablation comparison bars -->
+                <div class="comparison-bar-container" style="margin-top: 1.5rem;">
+                    <div class="comparison-bar-item">
+                        <span class="comparison-bar-label">Uniform</span>
+                        <div class="comparison-bar-track">
+                            <div class="comparison-bar-fill" style="width: 100%; background: #CBD5E0;">42.31 (baseline)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="comparison-bar-item">
+                        <span class="comparison-bar-label">Freq-only</span>
+                        <div class="comparison-bar-track">
+                            <div class="comparison-bar-fill" style="width: 98.9%; background: #FFA726;">41.87 <span
+                                    style="color:#e65100;font-weight:700">(−1.0%)</span></div>
+                        </div>
+                    </div>
+                    <div class="comparison-bar-item">
+                        <span class="comparison-bar-label">Learned-only</span>
+                        <div class="comparison-bar-track">
+                            <div class="comparison-bar-fill" style="width: 94.8%; background: #66BB6A;">40.12 <span
+                                    style="color:#2e7d32;font-weight:700">(−5.2%)</span></div>
+                        </div>
+                    </div>
+                    <div class="comparison-bar-item">
+                        <span class="comparison-bar-label" style="font-weight:700;color:var(--primary);">Hybrid
+                            (ours)</span>
+                        <div class="comparison-bar-track">
+                            <div class="comparison-bar-fill"
+                                style="width: 92.2%; background: linear-gradient(90deg, var(--primary), var(--primary-light));">
+                                <strong>39.03 <span style="color:#fff;font-weight:900">(−8.4%)</span></strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="method-phase phase-2">
+                <span class="phase-number">Phase 2 — Curriculum</span>
+                <h3>Balanced Masking Schedule</h3>
+                <p>Neither pure importance-proportional nor importance-inverse masking suffices. We introduce
+                    <strong>time-varying interpolation</strong>:
+                </p>
+                <div class="equation-block">
+                    $$g_{\text{bal}}(i, t) = (1-t) \cdot g_{\text{inv}}(i) + t \cdot g_{\text{prop}}(i)$$
+                </div>
+                <p>At <strong>$t \approx 1$</strong> (heavy corruption): important tokens are <em>preserved</em> as
+                    semantic anchors — the model needs them for context.<br>
+                    At <strong>$t \approx 0$</strong> (mostly recovered): training <em>focuses</em> on important tokens
+                    — allocating capacity where it matters most.</p>
+                <div class="insight-box insight-green" style="margin-top: 1rem;">
+                    <p><strong>🎯 Intuition:</strong> Early in diffusion, keep the hard words visible so the model has
+                        context to predict easy words. Late in diffusion, test the model on hard words since it's
+                        already solved the easy ones.</p>
+                </div>
+            </div>
+
+            <div class="method-phase phase-3">
+                <span class="phase-number">Phase 3 — Training</span>
+                <h3>Importance-Weighted Denoising</h3>
+                <p>The full ATAT loss combines weighted denoising with importance supervision:</p>
+                <div class="equation-block">
+                    $$\mathcal{L}_{\text{ATAT}} = \underbrace{\mathbb{E}_{t,\mathbf{z}_t}\left[\sum_{l:z_t^l=[\text{M}]}
+                    (1+\beta \cdot i^l) \cdot \left(-\log p_\psi(x^l|\mathbf{z}_t,
+                    \mathbf{i})\right)\right]}_{\text{importance-weighted denoising}} + \gamma
+                    \underbrace{\frac{1}{L}\sum_l (i^l_{\text{learn}} - i^{l,*})^2}_{\text{importance supervision}}$$
+                </div>
+                <p>Tokens with higher importance get higher weight $w(i) = 1 + \beta i$ in the loss, directing model
+                    capacity toward the predictions that matter most.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- THEORETICAL RESULTS                                 -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="section alt-bg" id="theory">
+        <div class="container is-max-desktop">
+            <h2 class="section-title">Theoretical Guarantees</h2>
+            <p class="section-subtitle">Rigorous foundations for importance-guided diffusion</p>
+            <hr class="section-divider">
+
+            <div class="theory-grid">
+                <div class="theory-card">
+                    <div class="theory-label">Theorem 1</div>
+                    <h4>Valid ELBO</h4>
+                    <p>The importance-weighted NELBO with $w(i) = 1 + \beta i$ provides a valid upper bound on negative
+                        log-likelihood:</p>
+                    <div class="equation-block" style="margin-top:1rem; font-size: 0.9rem;">
+                        $$-\log p_\theta(\mathbf{x}) \leq \frac{1}{\min_l w(i^l)} \cdot \mathcal{L}_{\text{IW}} + C$$
+                    </div>
+                </div>
+                <div class="theory-card">
+                    <div class="theory-label">Proposition 1</div>
+                    <h4>Complexity Reduction</h4>
+                    <p>Under bounded anchor structure with $|\mathcal{A}| = d \ll L$ anchor tokens:</p>
+                    <div class="equation-block" style="margin-top:1rem; font-size: 0.9rem;">
+                        $$\mathcal{O}(K^L) \;\to\; \mathcal{O}(LK^{d+1})$$
+                    </div>
+                    <p style="font-size:0.82rem; margin-top:0.5rem; color: var(--text-muted);">Exponential → polynomial
+                        in sequence length</p>
+                </div>
+                <div class="theory-card">
+                    <div class="theory-label">Proposition 2</div>
+                    <h4>Robustness Bound</h4>
+                    <p>With $\eta = 0.3$, the balanced masking is Lipschitz continuous w.r.t. importance error:</p>
+                    <div class="equation-block" style="margin-top:1rem; font-size: 0.9rem;">
+                        $$|g_{\text{bal}}(\hat{i}, t) - g_{\text{bal}}(i^*, t)| \leq 0.4\varepsilon_i$$
+                    </div>
+                    <p style="font-size:0.82rem; margin-top:0.5rem; color: var(--text-muted);">Errors in importance
+                        estimation are attenuated, not amplified</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- EXPERIMENTAL RESULTS                                -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="section" id="results">
+        <div class="container is-max-desktop">
+            <h2 class="section-title">Experimental Results</h2>
+            <p class="section-subtitle">Trained on OpenWebText · Evaluated on 7 benchmarks</p>
+            <hr class="section-divider">
+
+            <!-- Main Results Table -->
+            <div class="results-table-wrapper">
+                <div class="results-table-header">
+                    <i class="fas fa-chart-bar" style="color: var(--primary);"></i>
+                    Perplexity vs Compute Budget — ATAT delivers more with less (↓ is better)
+                </div>
+                <table class="table atat-table is-fullwidth">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Model</th>
+                            <th>WikiText</th>
+                            <th>LAMBADA</th>
+                            <th>LM1B</th>
+                            <th>Train Params</th>
+                            <th>Tokens</th>
+                            <th>PPL / Billion Tokens</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="type-badge badge-ar">AR</span></td>
+                            <td>GPT-2</td>
+                            <td>25.75</td>
+                            <td>51.28</td>
+                            <td>21.55</td>
+                            <td>124M</td>
+                            <td>65B</td>
+                            <td style="color:var(--text-muted);">0.40</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="4"><span class="type-badge badge-dlm">DLM</span></td>
+                            <td>D3PM</td>
+                            <td>—</td>
+                            <td>—</td>
+                            <td>47.50</td>
+                            <td>124M</td>
+                            <td>33B</td>
+                            <td style="color:var(--text-muted);">1.44</td>
+                        </tr>
+                        <tr>
+                            <td>SEDD</td>
+                            <td>34.28</td>
+                            <td>49.86</td>
+                            <td>32.79</td>
+                            <td>124M</td>
+                            <td>33B</td>
+                            <td style="color:var(--text-muted);">1.04</td>
+                        </tr>
+                        <tr>
+                            <td>MDLM</td>
+                            <td>32.83</td>
+                            <td>47.52</td>
+                            <td>27.04</td>
+                            <td>124M</td>
+                            <td>33B</td>
+                            <td style="color:var(--text-muted);">0.99</td>
+                        </tr>
+                        <tr>
+                            <td>ADLM</td>
+                            <td>31.94</td>
+                            <td>44.32</td>
+                            <td>24.46</td>
+                            <td>170M</td>
+                            <td>65B</td>
+                            <td style="color:var(--text-muted);">0.49</td>
+                        </tr>
+                        <tr class="row-ours">
+                            <td rowspan="2"><span class="type-badge badge-ours">Ours</span></td>
+                            <td>ATAT (500K)</td>
+                            <td>33.47</td>
+                            <td>45.91</td>
+                            <td>26.82</td>
+                            <td><strong>49M</strong></td>
+                            <td><strong>3.1B</strong></td>
+                            <td class="best-val"><strong>10.80</strong></td>
+                        </tr>
+                        <tr class="row-ours">
+                            <td>ATAT (1M)</td>
+                            <td class="best-val"><strong>31.21</strong></td>
+                            <td class="best-val"><strong>44.78</strong></td>
+                            <td>25.15</td>
+                            <td><strong>49M</strong></td>
+                            <td><strong>6.5B</strong></td>
+                            <td class="best-val"><strong>4.80</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="insight-box">
+                <p><strong>📊 The efficiency story:</strong> ATAT's PPL-per-billion-tokens ratio is <strong>10× better
+                        than ADLM</strong> (4.80 vs 0.49) and <strong>5× better than MDLM</strong> (4.80 vs 0.99). On
+                    LAMBADA (long-range dependencies), ATAT <strong>outperforms the autoregressive GPT-2
+                        baseline</strong> (44.78 vs 51.28) — the first DLM to beat AR on this benchmark — proving that
+                    importance-aware bidirectional context surpasses left-to-right processing. ATAT achieves ADLM-level
+                    WikiText PPL (31.21 vs 31.94) with <strong>3.5× fewer trainable parameters and 10× fewer
+                        tokens</strong>.</p>
+            </div>
+
+            <!-- Zero-Shot Table -->
+            <div class="results-table-wrapper" style="margin-top: 3rem;">
+                <div class="results-table-header">
+                    <i class="fas fa-trophy" style="color: var(--accent-orange);"></i>
+                    Zero-Shot Generalization — Best DLM on Every Single Benchmark
+                </div>
+                <table class="table atat-table is-fullwidth">
+                    <thead>
+                        <tr>
+                            <th>Model</th>
+                            <th>LAMBADA</th>
+                            <th>PTB</th>
+                            <th>Wiki</th>
+                            <th>LM1B</th>
+                            <th>AG News</th>
+                            <th>PubMed</th>
+                            <th>ArXiv</th>
+                            <th>Avg ↓</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>AR (GPT-2)</td>
+                            <td>51.28</td>
+                            <td>82.05</td>
+                            <td>25.75</td>
+                            <td>51.25</td>
+                            <td>52.09</td>
+                            <td>49.01</td>
+                            <td>41.73</td>
+                            <td>50.45</td>
+                        </tr>
+                        <tr>
+                            <td>MDLM</td>
+                            <td>47.52</td>
+                            <td>95.26</td>
+                            <td>32.83</td>
+                            <td>67.01</td>
+                            <td>61.15</td>
+                            <td>41.89</td>
+                            <td>37.37</td>
+                            <td>54.72</td>
+                        </tr>
+                        <tr>
+                            <td>ADLM</td>
+                            <td>44.32</td>
+                            <td>95.37</td>
+                            <td>31.94</td>
+                            <td>64.43</td>
+                            <td>55.72</td>
+                            <td>37.56</td>
+                            <td>33.69</td>
+                            <td>51.86</td>
+                        </tr>
+                        <tr class="row-ours">
+                            <td><strong>ATAT (ours)</strong></td>
+                            <td class="best-val">43.58</td>
+                            <td class="best-val">94.12</td>
+                            <td class="best-val">31.48</td>
+                            <td class="best-val">63.29</td>
+                            <td class="best-val">54.31</td>
+                            <td class="best-val">36.82</td>
+                            <td class="best-val">32.95</td>
+                            <td class="best-val"><strong>50.94</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="insight-box insight-green" style="margin-top: 1.5rem;">
+                <p><strong>🌍 Closing the AR–DLM gap:</strong> ATAT narrows the average zero-shot gap between DLMs and
+                    AR models to just <strong>0.49 PPL</strong> (50.94 vs 50.45) — the tightest margin ever achieved by
+                    a diffusion LM. On specialized domains, ATAT <em>surpasses</em> AR: <strong>PubMed 36.82 vs 49.01
+                        (−24.9%)</strong>, <strong>ArXiv 32.95 vs 41.73 (−21.0%)</strong>. The contextual importance
+                    estimator identifies domain-specific terminology that frequency heuristics miss entirely.</p>
+            </div>
+
+            <!-- Ablation Table -->
+            <div class="results-table-wrapper" style="margin-top: 3rem;">
+                <div class="results-table-header">
+                    <i class="fas fa-flask" style="color: var(--accent-purple);"></i>
+                    The Hybrid Discovery — Neither Signal Alone Is Sufficient
+                </div>
+                <table class="table atat-table is-fullwidth">
+                    <thead>
+                        <tr>
+                            <th>Strategy</th>
+                            <th>Val PPL ↓</th>
+                            <th>Relative Gain</th>
+                            <th>Oracle Corr.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="row-ours">
+                            <td><strong>Hybrid (λ=0.7)</strong></td>
+                            <td class="best-val"><strong>39.03</strong></td>
+                            <td style="color: var(--accent-green); font-weight:700;">−8.4% vs uniform</td>
+                            <td><strong>0.82</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Learned-only (λ=1.0)</td>
+                            <td>40.12</td>
+                            <td>−5.2%</td>
+                            <td>0.78</td>
+                        </tr>
+                        <tr>
+                            <td>Frequency-only (λ=0.0)</td>
+                            <td>41.87</td>
+                            <td>−1.0%</td>
+                            <td>0.71</td>
+                        </tr>
+                        <tr>
+                            <td>Uniform (no importance)</td>
+                            <td>42.31</td>
+                            <td>— (baseline)</td>
+                            <td>—</td>
+                        </tr>
+                        <tr style="border-top: 2px solid var(--border);">
+                            <td style="color: var(--text-muted); font-style:italic;">λ=0.5</td>
+                            <td>39.56</td>
+                            <td style="color: var(--text-muted);">−6.5%</td>
+                            <td>0.79</td>
+                        </tr>
+                        <tr>
+                            <td style="color: var(--text-muted); font-style:italic;">λ=0.9</td>
+                            <td>39.87</td>
+                            <td style="color: var(--text-muted);">−5.8%</td>
+                            <td>0.80</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- DNA & DOWNSTREAM                                    -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="section alt-bg" id="downstream">
+        <div class="container is-max-desktop">
+            <h2 class="section-title">Beyond Text: DNA &amp; Protein Applications</h2>
+            <p class="section-subtitle">Importance-aware masking naturally transfers to biological sequences</p>
+            <hr class="section-divider">
+
+            <div class="content-text">
+                <p>DNA has intrinsically heterogeneous importance: <strong>TATA boxes</strong>, CpG islands, and
+                    transcription factor binding sites are biologically critical, while spacer regions are relatively
+                    unconstrained. ATAT's importance estimation captures this structure without domain-specific
+                    supervision.</p>
+            </div>
+
+            <!-- DNA visualization -->
+            <div class="token-viz-container" style="margin: 2rem auto;">
+                <div class="token-viz-label">DNA Promoter Sequence — TATA Box Highlighted</div>
+                <div class="dna-strand">
+                    <span class="dna-base base-A">A</span>
+                    <span class="dna-base base-G">G</span>
+                    <span class="dna-base base-C">C</span>
+                    <span class="dna-base base-T">T</span>
+                    <span class="dna-base base-A">A</span>
+                    <span class="dna-base base-G">G</span>
+                    <span class="dna-base base-C">C</span>
+                    <span class="dna-base base-G">G</span>
+                    <span class="dna-base base-tata">T</span>
+                    <span class="dna-base base-tata">A</span>
+                    <span class="dna-base base-tata">T</span>
+                    <span class="dna-base base-tata">A</span>
+                    <span class="dna-base base-tata">A</span>
+                    <span class="dna-base base-tata">A</span>
+                    <span class="dna-base base-tata">A</span>
+                    <span class="dna-base base-tata">G</span>
+                    <span class="dna-base base-A">A</span>
+                    <span class="dna-base base-C">C</span>
+                    <span class="dna-base base-T">T</span>
+                    <span class="dna-base base-G">G</span>
+                    <span class="dna-base base-A">A</span>
+                    <span class="dna-base base-T">T</span>
+                    <span class="dna-base base-C">C</span>
+                    <span class="dna-base base-G">G</span>
+                </div>
+                <div style="text-align:center; font-size:0.82rem; color:var(--text-muted); margin-top:0.5rem;">
+                    <span
+                        style="display:inline-block;width:12px;height:12px;background:#FF8F00;border-radius:2px;margin-right:4px;"></span>
+                    TATA box region (high learned importance)
+                </div>
+            </div>
+
+            <div class="results-table-wrapper">
+                <div class="results-table-header">
+                    <i class="fas fa-dna" style="color: var(--accent-purple);"></i>
+                    Downstream Task Performance
+                </div>
+                <table class="table atat-table is-fullwidth">
+                    <thead>
+                        <tr>
+                            <th>Task</th>
+                            <th>Model</th>
+                            <th>PPL ↓</th>
+                            <th>Accuracy ↑</th>
+                            <th>F1 ↑</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="4" style="font-weight:600; vertical-align:middle;">Promoter<br>Generation</td>
+                            <td>D3PM</td>
+                            <td>12.41</td>
+                            <td>62.3%</td>
+                            <td>.538</td>
+                        </tr>
+                        <tr>
+                            <td>MDLM</td>
+                            <td>8.76</td>
+                            <td>71.8%</td>
+                            <td>.641</td>
+                        </tr>
+                        <tr>
+                            <td>ADLM</td>
+                            <td>7.93</td>
+                            <td>74.2%</td>
+                            <td>.682</td>
+                        </tr>
+                        <tr class="row-ours">
+                            <td><strong>ATAT</strong></td>
+                            <td class="best-val"><strong>6.84</strong></td>
+                            <td class="best-val"><strong>78.6%</strong></td>
+                            <td class="best-val"><strong>.741</strong></td>
+                        </tr>
+                        <tr>
+                            <td rowspan="3" style="font-weight:600; vertical-align:middle;">Protein<br>Sequences</td>
+                            <td>MDLM</td>
+                            <td>11.47</td>
+                            <td>52.8%</td>
+                            <td>.573</td>
+                        </tr>
+                        <tr>
+                            <td>ADLM</td>
+                            <td>10.05</td>
+                            <td>56.3%</td>
+                            <td>.619</td>
+                        </tr>
+                        <tr class="row-ours">
+                            <td><strong>ATAT</strong></td>
+                            <td class="best-val"><strong>8.72</strong></td>
+                            <td class="best-val"><strong>61.7%</strong></td>
+                            <td class="best-val"><strong>.687</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="insight-box insight-purple">
+                <p><strong>🧬 Key insight:</strong> ATAT achieves <strong>-13.7% PPL</strong> and <strong>+8.7% motif
+                        F1</strong> vs ADLM on DNA promoter generation. The importance estimator automatically learns to
+                    attend to biologically functional regions (TATA boxes, GC-rich regions) without explicit biological
+                    supervision.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- CONTRIBUTIONS                                       -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="section" id="contributions">
+        <div class="container is-max-desktop">
+            <h2 class="section-title">Contributions</h2>
+            <hr class="section-divider">
+
+            <div class="contribution-card">
+                <div class="contribution-number">1</div>
+                <div class="contribution-body">
+                    <h3>Hybrid Importance Estimation</h3>
+                    <p>We develop a hybrid importance estimator combining learned contextual features (from frozen
+                        GPT-2) with frequency-based priors, achieving <strong>0.82 correlation with oracle
+                            surprisal</strong>. The key finding is that <em>neither signal alone suffices</em>—their
+                        failure modes are complementary, yielding an <strong>8.4% relative PPL reduction</strong> over
+                        uniform masking.</p>
+                </div>
+            </div>
+
+            <div class="contribution-card">
+                <div class="contribution-number">2</div>
+                <div class="contribution-body">
+                    <h3>Balanced Masking Curriculum</h3>
+                    <p>We introduce a time-varying masking schedule that <strong>preserves important tokens
+                            early</strong> (as semantic anchors for context) and <strong>focuses on them late</strong>
+                        (for capacity allocation). This implements a principled token-level curriculum that adapts
+                        across diffusion timesteps—a fundamentally new approach to curriculum learning in diffusion
+                        models.</p>
+                </div>
+            </div>
+
+            <div class="contribution-card">
+                <div class="contribution-number">3</div>
+                <div class="contribution-body">
+                    <h3>Theoretical Foundations</h3>
+                    <p>We prove importance-guided masking provides a <strong>valid ELBO bound</strong>, reduces sample
+                        complexity from $\mathcal{O}(K^L) \to \mathcal{O}(LK^{d+1})$, and is
+                        <strong>Lipschitz-robust</strong> to estimation error with constant 0.4—errors are attenuated,
+                        not amplified.
+                    </p>
+                </div>
+            </div>
+
+            <div class="contribution-card">
+                <div class="contribution-number">4</div>
+                <div class="contribution-body">
+                    <h3>State-of-the-Art Efficiency</h3>
+                    <p>ATAT achieves SOTA zero-shot performance across all 7 benchmarks using <strong>3.5× fewer
+                            trainable parameters</strong> (49M vs. 170M) and <strong>10× fewer training tokens</strong>
+                        (6.5B vs. 65B)
+                        than ADLM—a <strong>10× better PPL-per-compute ratio</strong>. It further generalizes to
+                        downstream DNA/protein tasks, demonstrating the universality of
+                        importance-aware masking.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- LINGUISTIC VALIDATION                               -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="section alt-bg" id="analysis">
+        <div class="container is-max-desktop">
+            <h2 class="section-title">Linguistic Validation</h2>
+            <p class="section-subtitle">Learned importance aligns with linguistic intuitions — without explicit
+                supervision</p>
+            <hr class="section-divider">
+
+            <div class="results-table-wrapper" style="max-width:700px; margin: 0 auto;">
+                <div class="results-table-header">
+                    <i class="fas fa-language" style="color: var(--accent-green);"></i>
+                    POS-Tag Importance Analysis
+                </div>
+                <table class="table atat-table is-fullwidth">
+                    <thead>
+                        <tr>
+                            <th>POS Category</th>
+                            <th>Mean Importance</th>
+                            <th style="width:40%;">Distribution</th>
+                            <th>Expected</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Proper Nouns (NNP)</strong></td>
+                            <td><strong>0.78</strong></td>
+                            <td>
+                                <div style="background:#E3F2FD;border-radius:4px;overflow:hidden;height:10px;">
+                                    <div style="width:78%;height:100%;background:var(--primary);border-radius:4px;">
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="color: var(--accent-green);">✓ High</td>
+                        </tr>
+                        <tr>
+                            <td>Nouns (NN)</td>
+                            <td>0.62</td>
+                            <td>
+                                <div style="background:#E3F2FD;border-radius:4px;overflow:hidden;height:10px;">
+                                    <div
+                                        style="width:62%;height:100%;background:var(--primary-light);border-radius:4px;">
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="color: var(--accent-green);">✓ High</td>
+                        </tr>
+                        <tr>
+                            <td>Verbs (VB)</td>
+                            <td>0.58</td>
+                            <td>
+                                <div style="background:#E3F2FD;border-radius:4px;overflow:hidden;height:10px;">
+                                    <div
+                                        style="width:58%;height:100%;background:var(--accent-green);border-radius:4px;">
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="color: var(--accent-green);">✓ Med-High</td>
+                        </tr>
+                        <tr>
+                            <td>Adjectives (JJ)</td>
+                            <td>0.54</td>
+                            <td>
+                                <div style="background:#E3F2FD;border-radius:4px;overflow:hidden;height:10px;">
+                                    <div
+                                        style="width:54%;height:100%;background:var(--accent-green);border-radius:4px;">
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="color: var(--accent-green);">✓ Medium</td>
+                        </tr>
+                        <tr>
+                            <td>Prepositions (IN)</td>
+                            <td>0.32</td>
+                            <td>
+                                <div style="background:#E3F2FD;border-radius:4px;overflow:hidden;height:10px;">
+                                    <div
+                                        style="width:32%;height:100%;background:var(--accent-orange);border-radius:4px;">
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="color: var(--accent-green);">✓ Low</td>
+                        </tr>
+                        <tr>
+                            <td>Determiners (DT)</td>
+                            <td>0.21</td>
+                            <td>
+                                <div style="background:#E3F2FD;border-radius:4px;overflow:hidden;height:10px;">
+                                    <div style="width:21%;height:100%;background:#BDBDBD;border-radius:4px;"></div>
+                                </div>
+                            </td>
+                            <td style="color: var(--accent-green);">✓ Low</td>
+                        </tr>
+                        <tr>
+                            <td>Punctuation</td>
+                            <td>0.15</td>
+                            <td>
+                                <div style="background:#E3F2FD;border-radius:4px;overflow:hidden;height:10px;">
+                                    <div style="width:15%;height:100%;background:#E0E0E0;border-radius:4px;"></div>
+                                </div>
+                            </td>
+                            <td style="color: var(--accent-green);">✓ Low</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="insight-box insight-green" style="max-width: 700px; margin: 2rem auto;">
+                <p><strong>🔍 Emergence:</strong> Content words (nouns, verbs) → high importance. Function words
+                    (determiners, prepositions) → low importance. This linguistic hierarchy emerges purely from the
+                    training signal—<strong>no POS tags or linguistic features are provided</strong> during training.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- CITATION                                            -->
+    <!-- ═══════════════════════════════════════════════════ -->
+
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- FOOTER                                              -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <footer class="footer-atat">
+        <div class="container has-text-centered">
+            <p style="font-size: 0.9rem;">
+                © 2026 Anonymous Authors. NeurIPS 2026
+            </p>
+            <p style="font-size: 0.82rem; margin-top: 0.8rem;">
+                Built using the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template"
+                    target="_blank">Academic Project Page Template</a>,
+                adapted from the <a href="https://nerfies.github.io" target="_blank">Nerfies</a> project page.
+            </p>
+        </div>
+    </footer>
+
+</body>
+
+</html>

@@ -49,8 +49,14 @@ lightning_logs/
 *.pt
 *.bin
 
-# Submission
+# Submission / paper folders (large PDFs, build artifacts)
 submission/
+paper/
+
+# Per-subproject training artifacts
+atat/lightning_logs/
+atat/experiments/
+atat/scripts/visualizations/
 
 # LaTeX build artifacts
 paper/*.aux
@@ -70,9 +76,6 @@ figures/
 
 # Results (evaluation outputs - local only)
 results/
-
-# Old docs (GitHub Pages)
-docs/
 
 # Results (keep JSONs, ignore large files)
 results/**/*.png
